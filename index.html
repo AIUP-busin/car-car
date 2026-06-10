@@ -1,134 +1,201 @@
-<div class="container">
-    <h2 style="text-align: center; color: var(--neon-blue); margin-bottom: 10px;">Neon Drift Arena</h2>
-    <p style="text-align: center; color: var(--text-muted); margin-bottom: 15px;">
-        Boshqarish: <b style="color: var(--neon-green);">W, A, S, D</b> yoki <b style="color: var(--neon-green);">Yo'nalish tugmalari</b>. Drift qilish uchun tezlikda keskin buriling!
-    </p>
-    <canvas id="driftCanvas" width="800" height="500" style="border: 2px solid var(--neon-blue); box-shadow: 0 0 20px var(--neon-blue); display: block; margin: 0 auto; background: #0c1020;"></canvas>
-</div>
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Neon City Drift</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #050510;
+            font-family: sans-serif;
+        }
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #00f0ff;
+            text-align: center;
+            text-shadow: 0 0 10px #00f0ff;
+            pointer-events: none;
+            z-index: 10;
+        }
+        #ui h1 { margin: 0; font-size: 24px; }
+        #ui p { margin: 5px 0; color: #fff; font-size: 14px; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
 
-<script>
-const canvas = document.getElementById("driftCanvas");
-const ctx = canvas.getContext("2d");
+    <div id="ui">
+        <h1>3D Neon City Drive</h1>
+        <p>Boshqarish: <b>W, A, S, D</b> yoki <b>Yo'nalish tugmalari</b></p>
+    </div>
 
-// Klaviatura tugmalarini eslab qolish
-const keys = {};
-window.addEventListener("keydown", e => keys[e.key] = true);
-window.addEventListener("keyup", e => keys[e.key] = false);
+    <script>
+        // 1. 3D SAHNA VA KAMERANI SOZLASH
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050510);
+        scene.fog = new THREE.FogExp2(0x050510, 0.015); // Shahar tuman effekti
 
-// Mashina obyekti va fizikasi
-const car = {
-    x: canvas.width / 2,
-    y: canvas.height / 2,
-    width: 30,
-    height: 15,
-    angle: 0,
-    speed: 0,
-    maxSpeed: 6,
-    acc: 0.15,
-    friction: 0.05,
-    steerSpeed: 0.04,
-    driftFriction: 0.96 // Drift hissini beruvchi asosiy ko'rsatkich
-};
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
 
-// Drift izlarini saqlash uchun massiv
-const skidMarks = [];
+        // 2. YORUG'LIK
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+        scene.add(ambientLight);
 
-function updatePhysics() {
-    // Oldinga va orqaga yurish
-    if (keys["w"] || keys["ArrowUp"]) {
-        if (car.speed < car.maxSpeed) car.speed += car.acc;
-    } else if (keys["s"] || keys["ArrowDown"]) {
-        if (car.speed > -car.maxSpeed / 2) car.speed -= car.acc;
-    } else {
-        // Inersiya hisobiga to'xtash
-        if (car.speed > 0) car.speed -= car.friction;
-        if (car.speed < 0) car.speed += car.friction;
-        if (Math.abs(car.speed) < 0.05) car.speed = 0;
-    }
+        const dirLight = new THREE.DirectionalLight(0x00f0ff, 0.8);
+        dirLight.position.set(10, 20, 10);
+        scene.add(dirLight);
 
-    // O'ngga va chapga burilish (faqat mashina harakatlanayotganda)
-    if (Math.abs(car.speed) > 0.2) {
-        const currentSteer = car.speed > 0 ? car.steerSpeed : -car.steerSpeed;
-        if (keys["a"] || keys["ArrowLeft"]) car.angle -= currentSteer;
-        if (keys["d"] || keys["ArrowRight"]) car.angle += currentSteer;
-    }
+        // 3. YO'L VA YER (SHAHAR ASOSI)
+        const floorGeo = new THREE.PlaneGeometry(2000, 2000);
+        const floorMat = new THREE.MeshStandardMaterial({ color: 0x0a0a14, roughness: 0.8 });
+        const floor = new THREE.Mesh(floorGeo, floorMat);
+        floor.rotation.x = -Math.PI / 2;
+        scene.add(floor);
 
-    // Drift fizikasi (Harakat yo'nalishi va mashina burchagi o'rtasidagi farq)
-    // Agar keskin burilsa, drift izi qoladi
-    if (Math.abs(car.speed) > 3 && (keys["a"] || keys["ArrowLeft"] || keys["d"] || keys["ArrowRight"])) {
-        skidMarks.push({ x: car.x, y: car.y });
-        if (skidMarks.length > 150) skidMarks.shift(); // Xotirani to'ldirmaslik uchun eskilarini o'chiramiz
-    }
+        // Shahar ko'chalari chiziqlari (Grid)
+        const grid = new THREE.GridHelper(2000, 100, 0x00f0ff, 0x141b2d);
+        grid.position.y = 0.01;
+        scene.add(grid);
 
-    // Pozitsiyani yangilash
-    car.x += Math.cos(car.angle) * car.speed;
-    car.y += Math.sin(car.angle) * car.speed;
+        // 4. SHAHAR BINOLARINI YARATISH (CITY OUTLINE)
+        const buildings = [];
+        const buildingGeo = new THREE.BoxGeometry(1, 1, 1);
+        
+        for (let i = 0; i < 150; i++) {
+            // Tasodifiy rangdagi neon binolar
+            const neonColors = [0x00f0ff, 0xff3131, 0x39ff14, 0xbd00ff];
+            const randomColor = neonColors[Math.floor(Math.random() * neonColors.length)];
+            
+            const bMat = new THREE.MeshStandardMaterial({
+                color: 0x101420,
+                roughness: 0.5,
+                metalness: 0.1,
+                emissive: randomColor,
+                emissiveIntensity: 0.2
+            });
 
-    // Devorlardan o'tib ketmaslik (Ekran chegaralari)
-    if (car.x < 0) car.x = canvas.width;
-    if (car.x > canvas.width) car.x = 0;
-    if (car.y < 0) car.y = canvas.height;
-    if (car.y > canvas.height) car.y = 0;
-}
+            const building = new THREE.Mesh(buildingGeo, bMat);
+            
+            // Binolar o'lchami va joylashuvi
+            const w = Math.random() * 20 + 10;
+            const h = Math.random() * 60 + 20;
+            const d = Math.random() * 20 + 10;
+            building.scale.set(w, h, d);
 
-function drawSkidMarks() {
-    if (skidMarks.length < 2) return;
-    ctx.beginPath();
-    ctx.strokeStyle = "rgba(255, 49, 49, 0.4)"; // Neon qizil rangdagi drift izlari
-    ctx.lineWidth = 3;
-    ctx.shadowBlur = 5;
-    ctx.shadowColor = "var(--neon-red)";
-    
-    for (let i = 0; i < skidMarks.length; i++) {
-        ctx.lineTo(skidMarks[i].x, skidMarks[i].y);
-    }
-    ctx.stroke();
-    ctx.shadowBlur = 0; // Boshqa elementlarga ta'sir qilmasligi uchun o'chiramiz
-}
+            // Yo'llarga bino tushib qolmasligi uchun markazdan qochiramiz
+            let x = (Math.random() - 0.5) * 800;
+            let z = (Math.random() - 0.5) * 800;
+            if (Math.abs(x) < 20) x += 30; 
+            if (Math.abs(z) < 20) z += 30;
 
-function drawCar() {
-    ctx.save();
-    ctx.translate(car.x, car.y);
-    ctx.rotate(car.angle);
+            building.position.set(x, h / 2, z);
+            scene.add(building);
+        }
 
-    // Mashina korpusi (Neon yashil)
-    ctx.fillStyle = "#141b2d";
-    ctx.strokeStyle = "var(--neon-green)";
-    ctx.lineWidth = 2;
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = "var(--neon-green)";
-    
-    ctx.fillRect(-car.width / 2, -car.height / 2, car.width, car.height);
-    ctx.strokeRect(-car.width / 2, -car.height / 2, car.width, car.height);
+        // 5. 3D MASHINA YARATISH
+        const carGroup = new THREE.Group();
 
-    // Neon ko'k chiroqlar (Mashina old qismi qayerdaligini bilish uchun)
-    ctx.fillStyle = "var(--neon-blue)";
-    ctx.shadowColor = "var(--neon-blue)";
-    ctx.fillRect(car.width / 2 - 4, -car.height / 2 + 2, 4, 3);
-    ctx.fillRect(car.width / 2 - 4, car.height / 2 - 5, 4, 3);
+        // Mashina korpusi
+        const bodyGeo = new THREE.BoxGeometry(2, 0.8, 4);
+        const bodyMat = new THREE.MeshStandardMaterial({ color: 0x141b2d, emissive: 0x39ff14, emissiveIntensity: 0.4 });
+        const carBody = new THREE.Mesh(bodyGeo, bodyMat);
+        carBody.position.y = 0.6;
+        carGroup.add(carBody);
 
-    ctx.restore();
-}
+        // Mashina oynasi kabinasi
+        const cabinGeo = new THREE.BoxGeometry(1.6, 0.6, 2);
+        const cabinMat = new THREE.MeshStandardMaterial({ color: 0x050505, emissive: 0x00f0ff, emissiveIntensity: 0.3 });
+        const cabin = new THREE.Mesh(cabinGeo, cabinMat);
+        cabin.position.set(0, 1.2, -0.2);
+        carGroup.add(cabin);
 
-function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Grid (Orqa fon chiziqlari) - Arena ko'rinishini berish uchun
-    ctx.strokeStyle = "rgba(0, 240, 255, 0.05)";
-    ctx.lineWidth = 1;
-    for (let i = 0; i < canvas.width; i += 40) {
-        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
-    }
-    for (let j = 0; j < canvas.height; j += 40) {
-        ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke();
-    }
+        // Chiroqlar (Farlar)
+        const lightGeo = new THREE.BoxGeometry(0.4, 0.2, 0.1);
+        const lightMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
+        const leftLight = new THREE.Mesh(lightGeo, lightMat);
+        leftLight.position.set(-0.7, 0.6, 2);
+        const rightLight = leftLight.clone();
+        rightLight.position.x = 0.7;
+        carGroup.add(leftLight, rightLight);
 
-    drawSkidMarks();
-    updatePhysics();
-    drawCar();
+        scene.add(carGroup);
+        carGroup.position.set(0, 0, 0);
 
-    requestAnimationFrame(gameLoop);
-}
+        // 6. HARAKAT FIZIKASI
+        let speed = 0;
+        let maxSpeed = 1.2;
+        let accel = 0.02;
+        let friction = 0.01;
+        let angle = 0;
+        let steerSpeed = 0.03;
 
-gameLoop();
-</script>
+        // Tugmalarni eslab qolish
+        const keys = {};
+        window.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
+        window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
+
+        function updatePhysics() {
+            // Oldinga / Orqaga
+            if (keys['w'] || keys['arrowup']) {
+                if (speed < maxSpeed) speed += accel;
+            } else if (keys['s'] || keys['arrowdown']) {
+                if (speed > -maxSpeed / 2) speed -= accel;
+            } else {
+                // Ishqalanish (To'xtash)
+                if (speed > 0) speed -= friction;
+                if (speed < 0) speed += friction;
+                if (Math.abs(speed) < friction) speed = 0;
+            }
+
+            // O'ngga / Chapga burilish
+            if (Math.abs(speed) > 0.05) {
+                const turnDir = speed > 0 ? 1 : -1;
+                if (keys['a'] || keys['arrowleft']) angle += steerSpeed * turnDir;
+                if (keys['d'] || keys['arrowright']) angle -= steerSpeed * turnDir;
+            }
+
+            // Pozitsiyani o'zgartirish
+            carGroup.rotation.y = angle;
+            carGroup.position.x += Math.sin(angle) * speed;
+            carGroup.position.z += Math.cos(angle) * speed;
+        }
+
+        // 7. KAMERANI MASHINA ORQASIDAN ERGASHTIRISH
+        function updateCamera() {
+            // Mashina orqasidagi ideal nuqta
+            const offset = new THREE.Vector3(0, 5, -12); 
+            offset.applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+            
+            camera.position.copy(carGroup.position).add(offset);
+            camera.lookAt(carGroup.position.clone().add(new THREE.Vector3(0, 1, 2).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle)));
+        }
+
+        // 8. O'YIN ANIMASIYASI (GAME LOOP)
+        function animate() {
+            requestAnimationFrame(animate);
+
+            updatePhysics();
+            updateCamera();
+
+            renderer.render(scene, camera);
+        }
+
+        // Oynani o'lchamini o'zgartirishga moslashuvchanlik
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>
