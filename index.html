@@ -1,160 +1,134 @@
-import os
-import logging
-from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
-import google.generativeai as genai
+<div class="container">
+    <h2 style="text-align: center; color: var(--neon-blue); margin-bottom: 10px;">Neon Drift Arena</h2>
+    <p style="text-align: center; color: var(--text-muted); margin-bottom: 15px;">
+        Boshqarish: <b style="color: var(--neon-green);">W, A, S, D</b> yoki <b style="color: var(--neon-green);">Yo'nalish tugmalari</b>. Drift qilish uchun tezlikda keskin buriling!
+    </p>
+    <canvas id="driftCanvas" width="800" height="500" style="border: 2px solid var(--neon-blue); box-shadow: 0 0 20px var(--neon-blue); display: block; margin: 0 auto; background: #0c1020;"></canvas>
+</div>
 
-# Logging
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
-logger = logging.getLogger(__name__)
+<script>
+const canvas = document.getElementById("driftCanvas");
+const ctx = canvas.getContext("2d");
 
-# API keys
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+// Klaviatura tugmalarini eslab qolish
+const keys = {};
+window.addEventListener("keydown", e => keys[e.key] = true);
+window.addEventListener("keyup", e => keys[e.key] = false);
 
-# Gemini sozlash
-genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-1.5-flash")
+// Mashina obyekti va fizikasi
+const car = {
+    x: canvas.width / 2,
+    y: canvas.height / 2,
+    width: 30,
+    height: 15,
+    angle: 0,
+    speed: 0,
+    maxSpeed: 6,
+    acc: 0.15,
+    friction: 0.05,
+    steerSpeed: 0.04,
+    driftFriction: 0.96 // Drift hissini beruvchi asosiy ko'rsatkich
+};
 
-# HR Agent system prompt
-SYSTEM_PROMPT = """Sen Ottimo Cafe (Toshkentdagi zamonaviy italyan-style kafe) uchun HR agentisan.
-Faqat O'zbek tilida javob ber.
+// Drift izlarini saqlash uchun massiv
+const skidMarks = [];
 
-Ottimo Cafe haqida:
-- 25 xodim ishlaydi
-- Lavozimlari: barista, ofitsiant, oshpaz, kassir, menejer, tozalovchi
-- Ish vaqti: 08:00-22:00 (2 smena: 08:00-15:00 va 15:00-22:00)
-- Probatsiya muddati: 1 oy
-- Ish haqi: Barista 3-4 mln, Ofitsiant 2.5-3.5 mln, Menejer 6-8 mln UZS
-- O'zbekiston Mehnat kodeksiga mos ishlaydi
+function updatePhysics() {
+    // Oldinga va orqaga yurish
+    if (keys["w"] || keys["ArrowUp"]) {
+        if (car.speed < car.maxSpeed) car.speed += car.acc;
+    } else if (keys["s"] || keys["ArrowDown"]) {
+        if (car.speed > -car.maxSpeed / 2) car.speed -= car.acc;
+    } else {
+        // Inersiya hisobiga to'xtash
+        if (car.speed > 0) car.speed -= car.friction;
+        if (car.speed < 0) car.speed += car.friction;
+        if (Math.abs(car.speed) < 0.05) car.speed = 0;
+    }
 
-HR vazifalaring:
-1. Xodim qabul — CV ko'rib chiqish, intervyu savollari, lavozim talablari
-2. Onboarding — yangi xodimga nima kerakligini tushuntirish
-3. Smena jadvali — taqsimlash, dam olish kunlari
-4. Ish haqi — hisoblash, bonus, jarima
-5. Ichki qoidalar — tartib, kafe standartlari
-6. Mojarolar — hal qilish yo'llari
-7. Mehnat qonunlari — O'zbekiston qonunchiligi bo'yicha
+    // O'ngga va chapga burilish (faqat mashina harakatlanayotganda)
+    if (Math.abs(car.speed) > 0.2) {
+        const currentSteer = car.speed > 0 ? car.steerSpeed : -car.steerSpeed;
+        if (keys["a"] || keys["ArrowLeft"]) car.angle -= currentSteer;
+        if (keys["d"] || keys["ArrowRight"]) car.angle += currentSteer;
+    }
 
-Har doim do'stona, aniq va amaliy javob ber. Kerak bo'lsa ro'yxat yoki jadval ko'rinishida yoz."""
+    // Drift fizikasi (Harakat yo'nalishi va mashina burchagi o'rtasidagi farq)
+    // Agar keskin burilsa, drift izi qoladi
+    if (Math.abs(car.speed) > 3 && (keys["a"] || keys["ArrowLeft"] || keys["d"] || keys["ArrowRight"])) {
+        skidMarks.push({ x: car.x, y: car.y });
+        if (skidMarks.length > 150) skidMarks.shift(); // Xotirani to'ldirmaslik uchun eskilarini o'chiramiz
+    }
 
-# Har bir foydalanuvchi uchun suhbat tarixi
-user_sessions = {}
+    // Pozitsiyani yangilash
+    car.x += Math.cos(car.angle) * car.speed;
+    car.y += Math.sin(car.angle) * car.speed;
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Bot ishga tushganda"""
-    user_name = update.effective_user.first_name or "Salom"
-    welcome_text = f"""👋 Salom, {user_name}!
+    // Devorlardan o'tib ketmaslik (Ekran chegaralari)
+    if (car.x < 0) car.x = canvas.width;
+    if (car.x > canvas.width) car.x = 0;
+    if (car.y < 0) car.y = canvas.height;
+    if (car.y > canvas.height) car.y = 0;
+}
 
-Men **Ottimo Cafe HR Agentiman** 🍽️
-
-Quyidagi masalalarda yordam bera olaman:
-
-📋 Xodim qabul qilish
-📅 Smena jadvali
-💰 Ish haqi va bonuslar
-📝 Mehnat shartnomasi
-⚖️ Mehnat qonunlari
-🤝 Xodimlar bilan muammolar
-
-Savolingizni yozing, javob beraman!
-
-/help — yordam
-/clear — suhbatni tozalash"""
+function drawSkidMarks() {
+    if (skidMarks.length < 2) return;
+    ctx.beginPath();
+    ctx.strokeStyle = "rgba(255, 49, 49, 0.4)"; // Neon qizil rangdagi drift izlari
+    ctx.lineWidth = 3;
+    ctx.shadowBlur = 5;
+    ctx.shadowColor = "var(--neon-red)";
     
-    await update.message.reply_text(welcome_text, parse_mode='Markdown')
+    for (let i = 0; i < skidMarks.length; i++) {
+        ctx.lineTo(skidMarks[i].x, skidMarks[i].y);
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0; // Boshqa elementlarga ta'sir qilmasligi uchun o'chiramiz
+}
 
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Yordam"""
-    help_text = """🆘 *Yordam*
+function drawCar() {
+    ctx.save();
+    ctx.translate(car.x, car.y);
+    ctx.rotate(car.angle);
 
-Menga istalgan HR savolini yozishingiz mumkin:
-
-*Misol savollar:*
-• Barista uchun talablar qanday?
-• Yangi xodimni qanday qabul qilamiz?
-• Smena jadvalini qanday tuzish kerak?
-• Probatsiya muddati qancha?
-• Xodim shikoyat qilsa nima qilamiz?
-• Intervyu savollari tayyorlab ber
-
-*Buyruqlar:*
-/start — Boshiga qaytish
-/clear — Suhbatni tozalash
-/help — Yordam"""
+    // Mashina korpusi (Neon yashil)
+    ctx.fillStyle = "#141b2d";
+    ctx.strokeStyle = "var(--neon-green)";
+    ctx.lineWidth = 2;
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = "var(--neon-green)";
     
-    await update.message.reply_text(help_text, parse_mode='Markdown')
+    ctx.fillRect(-car.width / 2, -car.height / 2, car.width, car.height);
+    ctx.strokeRect(-car.width / 2, -car.height / 2, car.width, car.height);
 
-async def clear_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Suhbat tarixini tozalash"""
-    user_id = update.effective_user.id
-    user_sessions[user_id] = []
-    await update.message.reply_text("✅ Suhbat tozalandi. Yangi savol bering!")
+    // Neon ko'k chiroqlar (Mashina old qismi qayerdaligini bilish uchun)
+    ctx.fillStyle = "var(--neon-blue)";
+    ctx.shadowColor = "var(--neon-blue)";
+    ctx.fillRect(car.width / 2 - 4, -car.height / 2 + 2, 4, 3);
+    ctx.fillRect(car.width / 2 - 4, car.height / 2 - 5, 4, 3);
 
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Xabarlarni qayta ishlash"""
-    user_id = update.effective_user.id
-    user_text = update.message.text
+    ctx.restore();
+}
 
-    # Typing ko'rsatish
-    await context.bot.send_chat_action(
-        chat_id=update.effective_chat.id,
-        action="typing"
-    )
+function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Grid (Orqa fon chiziqlari) - Arena ko'rinishini berish uchun
+    ctx.strokeStyle = "rgba(0, 240, 255, 0.05)";
+    ctx.lineWidth = 1;
+    for (let i = 0; i < canvas.width; i += 40) {
+        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+    }
+    for (let j = 0; j < canvas.height; j += 40) {
+        ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke();
+    }
 
-    # Suhbat tarixini olish yoki yangi yaratish
-    if user_id not in user_sessions:
-        user_sessions[user_id] = []
+    drawSkidMarks();
+    updatePhysics();
+    drawCar();
 
-    try:
-        # Gemini ga yuborish
-        chat_history = user_sessions[user_id]
-        
-        # To'liq prompt
-        full_prompt = f"{SYSTEM_PROMPT}\n\nFoydalanuvchi: {user_text}"
-        
-        if chat_history:
-            # Oldingi suhbatni qo'shish
-            history_text = "\n".join([
-                f"Foydalanuvchi: {h['user']}\nAgent: {h['agent']}"
-                for h in chat_history[-5:]  # Oxirgi 5 ta
-            ])
-            full_prompt = f"{SYSTEM_PROMPT}\n\nOldingi suhbat:\n{history_text}\n\nFoydalanuvchi: {user_text}"
+    requestAnimationFrame(gameLoop);
+}
 
-        response = model.generate_content(full_prompt)
-        reply = response.text
-
-        # Tarixga qo'shish
-        user_sessions[user_id].append({
-            "user": user_text,
-            "agent": reply
-        })
-
-        # Javob yuborish
-        await update.message.reply_text(reply)
-
-    except Exception as e:
-        logger.error(f"Xato: {e}")
-        await update.message.reply_text(
-            "⚠️ Xatolik yuz berdi. Qaytadan urinib ko'ring yoki /clear buyrug'ini ishlating."
-        )
-
-def main():
-    """Botni ishga tushirish"""
-    app = Application.builder().token(TELEGRAM_TOKEN).build()
-
-    # Handlerlar
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("help", help_command))
-    app.add_handler(CommandHandler("clear", clear_command))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-
-    logger.info("Bot ishga tushdi!")
-    app.run_polling(allowed_updates=Update.ALL_TYPES)
-
-if __name__ == "__main__":
-    main()
+gameLoop();
+</script>
