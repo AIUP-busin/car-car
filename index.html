@@ -3,343 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ottimo Catering | Inventar Strategik Tahlili</title>
+    <title>Ottimo Catering | Inventar & Foto-Hisobot</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
-        
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #F8FAFC;
-        }
-
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 650px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 320px;
-            max-height: 400px;
-        }
-
-        .stat-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin: auto; height: 300px; }
+        .img-preview { width: 48px; height: 48px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: transform 0.2s; }
+        .img-preview:hover { transform: scale(1.1); }
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); }
+        .modal-content { margin: auto; display: block; max-width: 80%; max-height: 80%; margin-top: 5%; border-radius: 12px; }
     </style>
 </head>
 <body class="text-slate-900">
 
     <!-- 
-      PALETTE CHOICE: "Vibrant Forest & Sunshine" 
-      Primary: #059669 (Emerald), Secondary: #D97706 (Amber), Accent: #0F172A (Deep Slate)
-      
-      PLAN:
-      1. Executive Summary: High-level KPI cards for total stock and branch leadership.
-      2. Comparative Landscape: Bar charts showing porcelain vs cutlery counts.
-      3. Inventory Density: Donut charts for category distribution.
-      4. Granular Inventory: Searchable table with conditional styling.
-      5. Conclusion: Strategic takeaways.
-      
-      CONFIRMATION: NO SVG used. NO Mermaid JS used.
+      PALETTE: Vibrant Forest (Emerald & Amber)
+      PLAN: 
+      1. Add Image column to the interactive inventory table.
+      2. Implement a simple image modal for viewing photos.
+      3. Maintain Chart.js analytics.
+      CONFIRMATION: NO SVG, NO MERMAID.
     -->
 
-    <header class="bg-[#0F172A] text-white py-10 px-6 sticky top-0 z-50 border-b border-white/10">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+    <div id="imageModal" class="modal flex items-center justify-center" onclick="this.style.display='none'">
+        <img class="modal-content" id="fullImage">
+    </div>
+
+    <header class="bg-[#0F172A] text-white py-8 px-6 border-b border-white/10">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-                <h1 class="text-3xl font-bold tracking-tight">OTTIMO <span class="text-[#059669]">ANALYTICS</span></h1>
-                <p class="text-slate-400 text-sm mt-1 uppercase tracking-widest">Inventar Strategik Boshqaruvi</p>
+                <h1 class="text-2xl font-bold tracking-tight">OTTIMO <span class="text-[#059669]">GALLERY</span></h1>
+                <p class="text-slate-400 text-xs mt-1 uppercase tracking-widest">Vizual Inventar Nazorati</p>
             </div>
-            <nav class="flex gap-6 text-sm font-medium">
-                <a href="#summary" class="hover:text-[#059669] transition-colors">Xulosa</a>
-                <a href="#charts" class="hover:text-[#059669] transition-colors">Grafiklar</a>
-                <a href="#data" class="hover:text-[#059669] transition-colors">Ma'lumotlar</a>
-            </nav>
+            <div class="bg-white/10 px-4 py-2 rounded-full text-xs font-medium">
+                Sana: 12.06.2026
+            </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12">
+    <main class="max-w-7xl mx-auto px-6 py-10">
         
-        <section id="summary" class="mb-16">
-            <div class="mb-8">
-                <h2 class="text-2xl font-bold text-slate-800">Filiallar Holati</h2>
-                <p class="text-slate-500 mt-2">Parus va Nukus filiallarining jami moddiy boyliklari ko'rsatkichi.</p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div class="stat-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Jami Buyumlar</p>
-                    <div class="flex items-end gap-2 mt-2">
-                        <span class="text-4xl font-extrabold text-slate-900" id="stat-total">0</span>
-                        <span class="text-emerald-600 text-sm font-bold mb-1">↑ 100%</span>
-                    </div>
-                </div>
-
-                <div class="stat-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-[#059669]">
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Parus Filiali</p>
-                    <div class="flex items-end gap-2 mt-2">
-                        <span class="text-4xl font-extrabold text-slate-900" id="stat-parus">0</span>
-                        <span class="text-slate-400 text-xs mb-1">birlik</span>
-                    </div>
-                </div>
-
-                <div class="stat-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-[#D97706]">
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Nukus Filiali</p>
-                    <div class="flex items-end gap-2 mt-2">
-                        <span class="text-4xl font-extrabold text-slate-900" id="stat-nukus">0</span>
-                        <span class="text-slate-400 text-xs mb-1">birlik</span>
-                    </div>
-                </div>
-
-                <div class="stat-card bg-[#059669] p-6 rounded-2xl shadow-lg text-white">
-                    <p class="text-white/70 text-xs font-bold uppercase tracking-wider">Asosiy Tavsiya</p>
-                    <p class="mt-2 text-sm font-medium leading-relaxed">
-                        Nukusda pichoq-vilkalar ko'proq, Parusda esa tarelka va chashkalar zaxirasi yuqori. Balansni saqlash tavsiya etiladi.
-                    </p>
+        <!-- Summary Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h3 class="text-sm font-bold text-slate-400 uppercase mb-4">Filiallararo Taqqoslash</h3>
+                <div class="chart-container">
+                    <canvas id="compChart"></canvas>
                 </div>
             </div>
-        </section>
-
-        <section id="charts" class="mb-16 scroll-mt-24">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
-                    <h3 class="text-lg font-bold mb-2">Kategoriyalar Bo'yicha Solishtiruv</h3>
-                    <p class="text-slate-500 text-sm mb-8">Pichoq-vilkalar va chashkalar filiallar kesimida.</p>
-                    <div class="chart-container">
-                        <canvas id="mainComparisonChart"></canvas>
-                    </div>
-                    <div class="mt-6 p-4 bg-slate-50 rounded-xl text-xs text-slate-600 italic leading-relaxed">
-                        Ushbu grafik Nukus filiali oshxona asboblari (cutlery) bo'yicha sezilarli ustunlikka ega ekanligini, Parus esa chashka va stakanlar bo'yicha yetakchiligini ko'rsatmoqda.
-                    </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h3 class="text-sm font-bold text-slate-400 uppercase mb-4">Parus Filiali Tarkibi</h3>
+                <div class="chart-container">
+                    <canvas id="parusChart"></canvas>
                 </div>
-
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
-                    <h3 class="text-lg font-bold mb-2">Inventar Tarkibi (Nukus)</h3>
-                    <p class="text-slate-500 text-sm mb-8">Nukus filialidagi umumiy inventar ulushi.</p>
-                    <div class="chart-container">
-                        <canvas id="nukusDonutChart"></canvas>
-                    </div>
-                    <div class="mt-6 p-4 bg-slate-50 rounded-xl text-xs text-slate-600 italic leading-relaxed">
-                        Nukusda porselein (chashka va tarelka) jami inventarning qariyb 60% qismini tashkil etadi. Bu filial katta hajmdagi tadbirlarga tayyor ekanidan dalolat beradi.
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <section id="data" class="scroll-mt-24">
-            <div class="flex flex-col md:flex-row justify-between items-end gap-6 mb-8">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-800">Batafsil Reestr</h2>
-                    <p class="text-slate-500 mt-2">Barcha buyumlarning filiallararo taqsimoti va aniq soni.</p>
-                </div>
-                <div class="w-full md:w-96">
-                    <input type="text" id="searchTable" placeholder="Buyumni qidirish..." class="w-full px-5 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#059669] focus:outline-none transition-all">
-                </div>
-            </div>
-
-            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-left" id="dataTable">
-                        <thead>
-                            <tr class="bg-slate-50 border-b border-slate-100">
-                                <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Buyum nomi</th>
-                                <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Parus</th>
-                                <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Nukus</th>
-                                <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Farq</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableContent" class="divide-y divide-slate-50">
-                            <!-- Populated via JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="bg-slate-900 text-white py-16 px-6 mt-20">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div>
-                <h3 class="text-xl font-bold mb-4 text-[#059669]">OTTIMO CATERING</h3>
-                <p class="text-slate-400 text-sm leading-relaxed max-w-sm">
-                    Ushbu tahliliy tizim inventarizatsiya jarayonini avtomatlashtirish va zaxiralarni samarali boshqarish maqsadida yaratilgan.
-                </p>
-            </div>
-            <div class="text-right">
-                <p class="text-slate-500 text-xs uppercase tracking-widest mb-2">Hisobot sanasi</p>
-                <p class="text-xl font-bold">12 Iyun, 2026</p>
             </div>
         </div>
-    </footer>
+
+        <!-- Table with Images -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                <h2 class="text-xl font-bold">Buyumlar va Rasmlar</h2>
+                <input type="text" id="search" placeholder="Buyum qidirish..." class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#059669] outline-none text-sm w-full md:w-64">
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-slate-50 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                            <th class="px-6 py-4">Rasm</th>
+                            <th class="px-6 py-4">Buyum nomi</th>
+                            <th class="px-6 py-4 text-center">Parus</th>
+                            <th class="px-6 py-4 text-center">Nukus</th>
+                            <th class="px-6 py-4">Holat</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-slate-100">
+                        <!-- JS populated -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
 
     <script>
+        // Rasm qo'shish uchun: rasm nomini "photo" qatoriga yozing.
+        // Rasmlar .html fayl bilan bitta joyda yoki "rasmlar/" papkasida bo'lishi kerak.
         const inventory = [
-            { name: "Ahmat qoshiq", parus: 4, nukus: 0 },
-            { name: "Americano chashka", parus: 6, nukus: 0 },
-            { name: "Bar qoshiq", parus: 2, nukus: 0 },
-            { name: "Cappuccino katta", parus: 10, nukus: 0 },
-            { name: "Cappuccino tarelka", parus: 9, nukus: 0 },
-            { name: "Cappuccino kichik", parus: 3, nukus: 10 },
-            { name: "Espresso cup", parus: 0, nukus: 4 },
-            { name: "Espresso tarelka", parus: 0, nukus: 9 },
-            { name: "Katta vilka", parus: 15, nukus: 20 },
-            { name: "Kichik qoshiq", parus: 6, nukus: 8 },
-            { name: "Kichik tarelka", parus: 12, nukus: 0 },
-            { name: "Kichik vilka", parus: 3, nukus: 1 },
-            { name: "Large cup", parus: 0, nukus: 13 },
-            { name: "Large tarelka", parus: 0, nukus: 18 },
-            { name: "Latte stakan", parus: 5, nukus: 0 },
-            { name: "Medium cup", parus: 0, nukus: 11 },
-            { name: "Pichoq", parus: 10, nukus: 18 },
-            { name: "Vaflili tarelka", parus: 13, nukus: 0 },
-            { name: "Flat white cup", parus: 0, nukus: 1 }
+            { name: "Pichoq", parus: 10, nukus: 18, photo: "pichoq.jpg" },
+            { name: "Katta vilka", parus: 15, nukus: 20, photo: "vilka_katta.jpg" },
+            { name: "Kichik vilka", parus: 3, nukus: 1, photo: "vilka_kichik.jpg" },
+            { name: "Kichik qoshiq", parus: 6, nukus: 8, photo: "qoshiq.jpg" },
+            { name: "Kapuchino chashka", parus: 10, nukus: 13, photo: "chashka.jpg" },
+            { name: "Latte stakan", parus: 5, nukus: 0, photo: "stakan.jpg" }
         ];
 
-        // Label wrapping helper (16 char logic)
-        function wrapLabel(label) {
-            if (label.length <= 16) return label;
-            const words = label.split(' ');
-            let lines = [];
-            let currentLine = "";
-            words.forEach(word => {
-                if ((currentLine + word).length > 16) {
-                    lines.push(currentLine.trim());
-                    currentLine = word + " ";
-                } else {
-                    currentLine += word + " ";
+        function render(data) {
+            const body = document.getElementById('tableBody');
+            body.innerHTML = data.map(item => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4">
+                        <img src="${item.photo}" 
+                             alt="${item.name}" 
+                             class="img-preview bg-slate-100" 
+                             onerror="this.src='https://via.placeholder.com/150?text=Yoq'"
+                             onclick="showFull('${item.photo}')">
+                    </td>
+                    <td class="px-6 py-4 font-semibold text-slate-700">${item.name}</td>
+                    <td class="px-6 py-4 text-center text-[#059669] font-bold">${item.parus}</td>
+                    <td class="px-6 py-4 text-center text-[#D97706] font-bold">${item.nukus}</td>
+                    <td class="px-6 py-4 text-xs font-medium ${item.parus > item.nukus ? 'text-emerald-500' : 'text-amber-500'}">
+                        ${item.parus > item.nukus ? 'Parusda ko\'p' : 'Nukusda ko\'p'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function showFull(src) {
+            const modal = document.getElementById('imageModal');
+            const fullImg = document.getElementById('fullImage');
+            fullImg.src = src;
+            modal.style.display = "flex";
+        }
+
+        function initCharts() {
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: function(items) {
+                                let label = items[0].chart.data.labels[items[0].dataIndex];
+                                return Array.isArray(label) ? label.join(' ') : label;
+                            }
+                        }
+                    }
                 }
-            });
-            lines.push(currentLine.trim());
-            return lines;
-        }
+            };
 
-        const sharedTooltipOptions = {
-            callbacks: {
-                title: function(tooltipItems) {
-                    const item = tooltipItems[0];
-                    let label = item.chart.data.labels[item.dataIndex];
-                    return Array.isArray(label) ? label.join(' ') : label;
-                }
-            }
-        };
-
-        function init() {
-            const parusTotal = inventory.reduce((a, b) => a + b.parus, 0);
-            const nukusTotal = inventory.reduce((a, b) => a + b.nukus, 0);
-            
-            document.getElementById('stat-total').innerText = parusTotal + nukusTotal;
-            document.getElementById('stat-parus').innerText = parusTotal;
-            document.getElementById('stat-nukus').innerText = nukusTotal;
-
-            renderTable(inventory);
-            renderCharts();
-        }
-
-        function renderTable(data) {
-            const container = document.getElementById('tableContent');
-            container.innerHTML = data.map(item => {
-                const diff = Math.abs(item.parus - item.nukus);
-                const colorClass = item.parus > item.nukus ? 'text-emerald-600' : (item.nukus > item.parus ? 'text-amber-600' : 'text-slate-400');
-                return `
-                    <tr class="hover:bg-slate-50/80 transition-colors">
-                        <td class="px-8 py-4 font-semibold text-slate-700">${item.name}</td>
-                        <td class="px-8 py-4 text-center text-slate-600 font-medium">${item.parus}</td>
-                        <td class="px-8 py-4 text-center text-slate-600 font-medium">${item.nukus}</td>
-                        <td class="px-8 py-4 text-center ${colorClass} font-bold text-xs">
-                            ${item.parus === item.nukus ? 'Teng' : diff + (item.parus > item.nukus ? ' (P)' : ' (N)')}
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function renderCharts() {
-            // Main Comparison (Bar Chart)
-            new Chart(document.getElementById('mainComparisonChart'), {
+            // Bar Chart
+            new Chart(document.getElementById('compChart'), {
                 type: 'bar',
                 data: {
-                    labels: [wrapLabel('Pichoqlar'), wrapLabel('Vilkalar'), wrapLabel('Chashkalar'), wrapLabel('Tarelkalar'), wrapLabel('Qoshiqlar')],
+                    labels: ['Pichoq', 'Vilkalar', 'Chashka', 'Stakanlar'],
                     datasets: [
-                        {
-                            label: 'Parus',
-                            data: [10, 18, 24, 34, 12],
-                            backgroundColor: '#059669',
-                            borderRadius: 6
-                        },
-                        {
-                            label: 'Nukus',
-                            data: [18, 21, 39, 45, 8],
-                            backgroundColor: '#D97706',
-                            borderRadius: 6
-                        }
+                        { label: 'Parus', data: [10, 18, 10, 5], backgroundColor: '#059669', borderRadius: 5 },
+                        { label: 'Nukus', data: [18, 21, 13, 0], backgroundColor: '#D97706', borderRadius: 5 }
                     ]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 6 } },
-                        tooltip: sharedTooltipOptions
-                    },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
-                        x: { grid: { display: false } }
-                    }
-                }
+                options: commonOptions
             });
 
-            // Nukus Structure (Donut Chart)
-            new Chart(document.getElementById('nukusDonutChart'), {
+            // Donut Chart
+            new Chart(document.getElementById('parusChart'), {
                 type: 'doughnut',
                 data: {
-                    labels: [wrapLabel('Asosiy Idishlar'), wrapLabel('Pichoq-Vilka'), wrapLabel('Stakanlar'), wrapLabel('Boshqa')],
+                    labels: ['Idishlar', 'Pichoq-vilka', 'Stakanlar'],
                     datasets: [{
-                        data: [45, 38, 15, 12],
-                        backgroundColor: ['#059669', '#D97706', '#0F172A', '#E2E8F0'],
-                        borderWidth: 0,
-                        hoverOffset: 20
+                        data: [45, 30, 25],
+                        backgroundColor: ['#0F172A', '#059669', '#D97706'],
+                        borderWidth: 0
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '75%',
-                    plugins: {
-                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } },
-                        tooltip: sharedTooltipOptions
-                    }
-                }
+                options: commonOptions
             });
         }
 
-        document.getElementById('searchTable').addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            const filtered = inventory.filter(i => i.name.toLowerCase().includes(term));
-            renderTable(filtered);
+        document.getElementById('search').addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            const filtered = inventory.filter(i => i.name.toLowerCase().includes(val));
+            render(filtered);
         });
 
-        window.onload = init;
+        window.onload = () => {
+            render(inventory);
+            initCharts();
+        };
     </script>
 </body>
 </html>
