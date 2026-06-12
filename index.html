@@ -143,7 +143,7 @@
                     <tbody class="divide-y divide-slate-100 text-sm">
                         
                         <!-- Item 1 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150 duration-200" data-has-photo="true">
+                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="true">
                             <td class="px-6 py-4 font-semibold text-slate-400">1</td>
                             <td class="px-6 py-4">
                                 <span class="font-bold text-slate-900 block">Ahmat qoshiq</span>
@@ -161,7 +161,7 @@
                         </tr>
 
                         <!-- Item 2 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="true">
+                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="false">
                             <td class="px-6 py-4 font-semibold text-slate-400">2</td>
                             <td class="px-6 py-4">
                                 <span class="font-bold text-slate-900 block">Americano chashka</span>
@@ -223,7 +223,7 @@
                             </td>
                             <td class="px-6 py-3 text-center">
                                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-slate-100 text-slate-400 border border-dashed border-slate-300">
-                                    <i class="fa-solid fa-coffee-pot text-lg"></i>
+                                    <i class="fa-solid fa-mug-hot text-lg"></i>
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-center font-semibold text-slate-700">10</td>
@@ -309,7 +309,7 @@
                             <td class="px-6 py-4 font-semibold text-slate-400">10</td>
                             <td class="px-6 py-4">
                                 <span class="font-bold text-slate-900 block">Espresso tarelka</span>
-                                <span class="text-xs text-slate-400">Likopchalar (photo_2)</span>
+                                <span class="text-xs text-slate-400">Likopchalar</span>
                             </td>
                             <td class="px-6 py-3 text-center">
                                 <div class="relative group inline-block">
@@ -345,7 +345,7 @@
                             <td class="px-6 py-4 font-semibold text-slate-400">12</td>
                             <td class="px-6 py-4">
                                 <span class="font-bold text-slate-900 block">Katta vilka</span>
-                                <span class="text-xs text-slate-400">Oshxona anjomlari (photo_4)</span>
+                                <span class="text-xs text-slate-400">Oshxona anjomlari</span>
                             </td>
                             <td class="px-6 py-3 text-center">
                                 <div class="relative group inline-block">
@@ -363,7 +363,7 @@
                             <td class="px-6 py-4 font-semibold text-slate-400">13</td>
                             <td class="px-6 py-4">
                                 <span class="font-bold text-slate-900 block">Kichik qoshiq</span>
-                                <span class="text-xs text-slate-400">Oshxona anjomlari (photo_7)</span>
+                                <span class="text-xs text-slate-400">Oshxona anjomlari</span>
                             </td>
                             <td class="px-6 py-3 text-center">
                                 <div class="relative group inline-block">
@@ -381,7 +381,7 @@
                             <td class="px-6 py-4 font-semibold text-slate-400">14</td>
                             <td class="px-6 py-4">
                                 <span class="font-bold text-slate-900 block">Kichik roks stakan</span>
-                                <span class="text-xs text-slate-400">Shisha idishlar (photo_9)</span>
+                                <span class="text-xs text-slate-400">Shisha idishlar</span>
                             </td>
                             <td class="px-6 py-3 text-center">
                                 <div class="relative group inline-block">
@@ -417,7 +417,7 @@
                             <td class="px-6 py-4 font-semibold text-slate-400">16</td>
                             <td class="px-6 py-4">
                                 <span class="font-bold text-slate-900 block">Kichik vilka</span>
-                                <span class="text-xs text-slate-400">Oshxona anjomlari (photo_5)</span>
+                                <span class="text-xs text-slate-400">Oshxona anjomlari</span>
                             </td>
                             <td class="px-6 py-3 text-center">
                                 <div class="relative group inline-block">
@@ -453,7 +453,7 @@
                             <td class="px-6 py-4 font-semibold text-slate-400">18</td>
                             <td class="px-6 py-4">
                                 <span class="font-bold text-slate-900 block">Large cup tarelka</span>
-                                <span class="text-xs text-slate-400">Likopchalar (photo_8 - To'rtburchak)</span>
+                                <span class="text-xs text-slate-400">Likopchalar (To'rtburchak)</span>
                             </td>
                             <td class="px-6 py-3 text-center">
                                 <div class="relative group inline-block">
@@ -556,12 +556,12 @@
                             <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
                         </tr>
 
-                        <!-- Item 24 (The Steak Knife present in photos but added for completeness) -->
+                        <!-- Item 24 -->
                         <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="true">
                             <td class="px-6 py-4 font-semibold text-slate-400">24</td>
                             <td class="px-6 py-4">
                                 <span class="font-bold text-slate-900 block">Pichoq</span>
-                                <span class="text-xs text-slate-400">Oshxona anjomlari (photo_3)</span>
+                                <span class="text-xs text-slate-400">Oshxona anjomlari</span>
                             </td>
                             <td class="px-6 py-3 text-center">
                                 <div class="relative group inline-block">
@@ -627,7 +627,7 @@
             }, 200);
         }
 
-        // Auto fallback to local paths or elegant placeholder on image load failure
+        // Auto fallback to elegant placeholder on image load failure
         function handleImageError(image) {
             const container = image.parentNode;
             container.innerHTML = `
