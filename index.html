@@ -3,171 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ottimo | Rasmli Inventar</title>
+    <title>Ottimo | Rasm Qo'shish Darsi</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; }
-        .chart-container { position: relative; width: 100%; max-width: 600px; margin: auto; height: 300px; }
-        .img-box { width: 60px; height: 60px; border-radius: 12px; overflow: hidden; background: #e2e8f0; cursor: pointer; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .img-box img { width: 100%; height: 100%; object-fit: cover; }
-        .modal { display: none; position: fixed; z-index: 100; inset: 0; background: rgba(0,0,0,0.9); padding: 20px; align-items: center; justify-content: center; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .code-block { background: #1e293b; color: #f8fafc; padding: 20px; border-radius: 12px; font-family: monospace; overflow-x: auto; }
+        .highlight { color: #10b981; font-weight: bold; }
     </style>
 </head>
-<body>
+<body class="p-6 md:p-12">
 
-    <!-- 
-      PALETTE: Energetic Emerald
-      PLAN: 
-      1. Create a visual guide with image placeholders.
-      2. Explain local file paths vs web URLs in comments.
-      3. Maintain interactive inventory logic.
-      CONFIRMATION: NO SVG, NO MERMAID.
-    -->
+    <div class="max-w-4xl mx-auto">
+        <header class="mb-10 text-center">
+            <h1 class="text-3xl font-bold text-slate-800">Rasmlarni qanday ulash kerak? 📸</h1>
+            <p class="text-slate-500 mt-2">Ushbu 3 ta oddiy qadamni bajaring</p>
+        </header>
 
-    <div id="imgModal" class="modal" onclick="this.style.display='none'">
-        <img id="fullImg" class="max-w-full max-h-full rounded-xl shadow-2xl">
+        <!-- Qadam 1 -->
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 mb-8">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-3">
+                <span class="w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center text-sm">1</span>
+                Rasmlarni tayyorlang
+            </h2>
+            <p class="text-slate-600 mb-4 leading-relaxed">
+                Avval rasmlarni telefoningizda oling va kompyuterga tashlang. 
+                <br><strong>Muhim:</strong> Rasmlar va kod fayli (HTML) bitta papkada bo'lishi kerak.
+            </p>
+            <div class="bg-slate-50 p-4 rounded-xl border-2 border-dashed border-slate-200 text-center">
+                <p class="text-xs text-slate-400 uppercase font-bold mb-2">Papka ko'rinishi:</p>
+                <p class="text-sm text-slate-700">📂 Mening_Inventarim /</p>
+                <p class="text-sm text-blue-600 ml-4">📄 ottimo_dashboard.html</p>
+                <p class="text-sm text-emerald-600 ml-4">🖼️ pichoq.jpg</p>
+                <p class="text-sm text-emerald-600 ml-4">🖼️ vilka.png</p>
+            </div>
+        </div>
+
+        <!-- Qadam 2 -->
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 mb-8">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-3">
+                <span class="w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center text-sm">2</span>
+                Koddan "inventoryData" qismini toping
+            </h2>
+            <p class="text-slate-600 mb-4">
+                HTML faylni Notepad++ yoki VS Code da oching va pastdagi mana bu qismni toping:
+            </p>
+            <div class="code-block text-sm">
+                const inventoryData = [<br>
+                &nbsp;&nbsp;{ name: "Pichoq", <span class="highlight">photo: "pichoq.jpg"</span>, parus: 10, nukus: 18 },<br>
+                &nbsp;&nbsp;{ name: "Vilka", <span class="highlight">photo: "vilka.png"</span>, parus: 15, nukus: 20 }<br>
+                ];
+            </div>
+        </div>
+
+        <!-- Qadam 3 -->
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-3">
+                <span class="w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center text-sm">3</span>
+                Nomlarni bir xil qiling
+            </h2>
+            <p class="text-slate-600 mb-4">
+                Rasmning nomi kodda qanday yozilgan bo'lsa, papkada ham xuddi shunday bo'lishi shart (harflar katta-kichikligiga e'tibor bering).
+            </p>
+            <ul class="space-y-2 text-sm text-slate-500">
+                <li class="flex items-center gap-2">❌ <code class="bg-red-50 text-red-600 px-2 rounded">Pichoq.JPG</code> (Katta harf)</li>
+                <li class="flex items-center gap-2">✅ <code class="bg-emerald-50 text-emerald-600 px-2 rounded">pichoq.jpg</code> (Kichik harf)</li>
+            </ul>
+        </div>
+
+        <div class="mt-10 text-center">
+            <p class="text-slate-400 text-sm italic">Agar rasm internetda bo'lsa, nomi o'rniga "https://sayt.uz/rasm.jpg" ko'rinishida yozish ham mumkin.</p>
+        </div>
     </div>
 
-    <header class="bg-[#064E3B] text-white py-12 px-6">
-        <div class="max-w-6xl mx-auto">
-            <h1 class="text-3xl font-bold italic">OTTIMO <span class="text-emerald-400">VISUAL</span></h1>
-            <p class="text-emerald-100/60 text-sm mt-2 tracking-widest uppercase font-semibold">Inventar va Rasmlar Boshqaruvi</p>
-        </div>
-    </header>
-
-    <main class="max-w-6xl mx-auto px-6 -mt-8">
-        <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
-            <div class="p-8 border-b border-slate-100 flex flex-col md:flex-row justify-between gap-4">
-                <div>
-                    <h2 class="text-xl font-bold">Buyumlar Katalogi</h2>
-                    <p class="text-slate-400 text-sm">Rasm ustiga bossangiz kattalashadi</p>
-                </div>
-                <input type="text" id="search" placeholder="Qidirish..." class="px-6 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-emerald-500 w-full md:w-80 transition-all">
-            </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                            <th class="px-8 py-5">Rasm</th>
-                            <th class="px-8 py-5">Nomi</th>
-                            <th class="px-8 py-5 text-center">Parus</th>
-                            <th class="px-8 py-5 text-center">Nukus</th>
-                            <th class="px-8 py-5">Holat</th>
-                        </tr>
-                    </thead>
-                    <tbody id="inventoryList" class="divide-y divide-slate-100">
-                        <!-- JS orqali to'ldiriladi -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 mb-20">
-            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-                <h3 class="font-bold text-slate-700 mb-6">Zaxira Ulushi</h3>
-                <div class="chart-container"><canvas id="pieChart"></canvas></div>
-            </div>
-            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-                <h3 class="font-bold text-slate-700 mb-6">Filiallar Solishtiruvi</h3>
-                <div class="chart-container"><canvas id="barChart"></canvas></div>
-            </div>
-        </div>
-    </main>
-
-    <script>
-        // --- BU YERGA DIQQAT QILING! ---
-        // Rasmni qo'shish uchun 'file' qismiga rasm nomini yozing.
-        // Masalan: Agar rasm nomi "pichoq.jpg" bo'lsa va u HTML fayl bilan bitta papkada bo'lsa:
-        // file: "pichoq.jpg" deb yozasiz.
-        
-        const data = [
-            { name: "Pichoq", parus: 10, nukus: 18, file: "pichoq.jpg" }, 
-            { name: "Katta vilka", parus: 15, nukus: 20, file: "vilka.png" },
-            { name: "Kichik qoshiq", parus: 6, nukus: 8, file: "qoshiq.webp" },
-            { name: "Chashka", parus: 10, nukus: 13, file: "https://via.placeholder.com/300?text=Chashka" },
-            { name: "Latte stakan", parus: 5, nukus: 0, file: "stakan.jpg" }
-        ];
-
-        function render(items) {
-            const list = document.getElementById('inventoryList');
-            list.innerHTML = items.map(item => `
-                <tr class="hover:bg-slate-50/80 transition-all">
-                    <td class="px-8 py-4">
-                        <div class="img-box" onclick="zoomImg('${item.file}')">
-                            <img src="${item.file}" alt="Rasm" onerror="this.src='https://via.placeholder.com/100?text=Rasm+yoq'">
-                        </div>
-                    </td>
-                    <td class="px-8 py-4 font-bold text-slate-700">${item.name}</td>
-                    <td class="px-8 py-4 text-center font-bold text-emerald-600">${item.parus}</td>
-                    <td class="px-8 py-4 text-center font-bold text-amber-600">${item.nukus}</td>
-                    <td class="px-8 py-4 text-[10px] font-bold uppercase tracking-tighter ${item.parus > 5 ? 'text-blue-500' : 'text-rose-500'}">
-                        ${item.parus > 5 ? 'Zaxira yetarli' : 'Kam qolgan'}
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function zoomImg(src) {
-            const modal = document.getElementById('imgModal');
-            document.getElementById('fullImg').src = src;
-            modal.style.display = 'flex';
-        }
-
-        function initCharts() {
-            const options = {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            title: (t) => {
-                                let l = t[0].chart.data.labels[t[0].dataIndex];
-                                return Array.isArray(l) ? l.join(' ') : l;
-                            }
-                        }
-                    }
-                }
-            };
-
-            new Chart(document.getElementById('pieChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Pichoqlar', 'Vilkalar', 'Qoshiqlar'],
-                    datasets: [{
-                        data: [28, 35, 14],
-                        backgroundColor: ['#064E3B', '#10B981', '#F59E0B'],
-                        borderWidth: 0
-                    }]
-                },
-                options: options
-            });
-
-            new Chart(document.getElementById('barChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['Pichoq', 'Vilka', 'Qoshiq', 'Chashka'],
-                    datasets: [
-                        { label: 'Parus', data: [10, 15, 6, 10], backgroundColor: '#10B981', borderRadius: 8 },
-                        { label: 'Nukus', data: [18, 20, 8, 13], backgroundColor: '#F59E0B', borderRadius: 8 }
-                    ]
-                },
-                options: options
-            });
-        }
-
-        document.getElementById('search').addEventListener('input', (e) => {
-            const val = e.target.value.toLowerCase();
-            const filtered = data.filter(i => i.name.toLowerCase().includes(val));
-            render(filtered);
-        });
-
-        window.onload = () => {
-            render(data);
-            initCharts();
-        };
-    </script>
 </body>
 </html>
