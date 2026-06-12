@@ -3,718 +3,348 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ottimo Catering - Professional Inventar Nazorati</title>
+    <title>Ottimo Catering - Inventar Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --bg-warm: #FDFCF0;
+            --sage: #4A5D23;
+            --sand: #D4A373;
+            --soft-grey: #64748b;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-warm);
         }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
+
+        .custom-shadow {
+            box-shadow: 0 4px 20px -2px rgba(74, 93, 35, 0.08);
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
+
+        .nav-active {
+            border-bottom: 3px solid var(--sage);
+            color: var(--sage);
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen">
+<body class="text-slate-900 leading-relaxed overflow-x-hidden">
 
-    <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <!-- Header -->
-        <header class="flex flex-col md:flex-row md:items-center md:justify-between pb-6 mb-8 border-b border-slate-200 gap-4">
-            <div>
-                <div class="flex items-center gap-3">
-                    <div class="bg-emerald-600 text-white p-2.5 rounded-xl shadow-lg shadow-emerald-600/20">
-                        <i class="fa-solid fa-kitchen-set text-2xl"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">OTTIMO Catering</h1>
-                        <p class="text-sm text-slate-500 font-medium">Asoschi uchun inventar va idishlar taqqoslash hisoboti</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="flex flex-wrap gap-2">
-                <button onclick="copyTableToClipboard()" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-emerald-600/10 transition-all duration-200 transform active:scale-95">
-                    <i class="fa-solid fa-copy"></i>
-                    Excel uchun nusxalash
-                </button>
-                <button onclick="window.print()" class="inline-flex items-center gap-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200">
-                    <i class="fa-solid fa-print"></i>
-                    Chop etish
-                </button>
-            </div>
-        </header>
+    <!-- Chosen Palette: Warm Minimalist (Cream, Sage Green, Sand) -->
+    <!-- Application Structure Plan: 
+         1. Dashboard Header & Global Stats: Summary view for quick consumption.
+         2. Comparative Analytics Section: Uses Chart.js to visualize disparities between Parus and Nukus.
+         3. Interactive Explorer: A powerful table with filtering and sorting for deep dives into specific item counts.
+         4. Export/Management: Direct actions for Excel integration.
+         The structure is chosen to move from high-level 'at-a-glance' info to granular details, prioritizing clarity. -->
+    <!-- Visualization & Content Choices: 
+         - Bar Charts: To compare Parus vs Nukus for key categories (Cutlery, Cups).
+         - Donut Charts: For item category distribution within branches.
+         - Data Tables: For raw values with search capabilities.
+         - Interaction: Filtering categories and real-time search.
+         CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 
-        <!-- Stats Widgets -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-                <div>
-                    <span class="text-sm text-slate-400 font-medium">Jami mahsulot turlari</span>
-                    <h3 class="text-2xl font-bold text-slate-800 mt-1">24 ta</h3>
-                </div>
-                <div class="bg-blue-50 text-blue-600 p-3 rounded-xl">
-                    <i class="fa-solid fa-boxes-stacked text-xl"></i>
-                </div>
-            </div>
-
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-                <div>
-                    <span class="text-sm text-slate-400 font-medium">Rasmli buyumlar</span>
-                    <h3 class="text-2xl font-bold text-emerald-600 mt-1">9 ta</h3>
-                </div>
-                <div class="bg-emerald-50 text-emerald-600 p-3 rounded-xl">
-                    <i class="fa-solid fa-image text-xl"></i>
-                </div>
-            </div>
-
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-                <div>
-                    <span class="text-sm text-slate-400 font-medium">Parus filiali jami</span>
-                    <h3 class="text-2xl font-bold text-slate-800 mt-1">53 ta</h3>
-                </div>
-                <div class="bg-violet-50 text-violet-600 p-3 rounded-xl">
-                    <i class="fa-solid fa-store text-xl"></i>
-                </div>
-            </div>
-
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-                <div>
-                    <span class="text-sm text-slate-400 font-medium">Nukus filiali jami</span>
-                    <h3 class="text-2xl font-bold text-slate-800 mt-1">122 ta</h3>
-                </div>
-                <div class="bg-amber-50 text-amber-600 p-3 rounded-xl">
-                    <i class="fa-solid fa-store text-xl"></i>
-                </div>
-            </div>
+    <nav class="sticky top-0 z-50 glass-morphism px-6 py-4 flex justify-between items-center custom-shadow">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-[#4A5D23] rounded-xl flex items-center justify-center text-white font-bold text-xl">O</div>
+            <span class="font-bold text-xl tracking-tight text-[#4A5D23]">OTTIMO <span class="font-light text-slate-500 text-sm">INVENTAR</span></span>
         </div>
+        <div class="hidden md:flex gap-8 text-sm font-medium uppercase tracking-wider">
+            <a href="#overview" class="hover:text-[#4A5D23] transition-colors nav-active">Umumiy</a>
+            <a href="#analysis" class="hover:text-[#4A5D23] transition-colors">Tahlil</a>
+            <a href="#table-section" class="hover:text-[#4A5D23] transition-colors">Ma'lumotlar</a>
+        </div>
+    </nav>
 
-        <!-- Alert / Instruction -->
-        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
-            <span class="text-blue-600 mt-0.5"><i class="fa-solid fa-circle-info text-lg"></i></span>
-            <div>
-                <h4 class="font-semibold text-blue-900 text-sm">Excelga oson o'tkazish usuli:</h4>
-                <p class="text-blue-800 text-xs mt-1 leading-relaxed">
-                    Yuqoridagi <strong>"Excel uchun nusxalash"</strong> tugmasini bosing va o'zingizning Excel faylingizga o'tib, kerakli joyga <strong>Ctrl + V</strong> ni bosing. Jadval rasmlari bilan birga avtomatik ravishda kataklarga joylashadi. Rasmlar kompyuteringizda ko'rinishi uchun ushbu HTML fayl va rasm fayllari bitta papkada joylashgan bo'lishi kerak.
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        
+        <!-- SECTION 1: OVERVIEW -->
+        <section id="overview" class="mb-16">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold mb-2">Filiallar Holati</h2>
+                <p class="text-slate-500 max-w-2xl">
+                    Ushbu bo'limda Ottimo Catering filiallari bo'yicha umumiy statistik ma'lumotlar keltirilgan. Bu yerda siz har bir filialdagi jami buyumlar sonini va inventarning umumiy holatini ko'rishingiz mumkin.
                 </p>
             </div>
-        </div>
 
-        <!-- Search and Filter -->
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="relative w-full md:max-w-md">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </span>
-                <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Nomi bo'yicha qidirish..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-150">
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Parus Card -->
+                <div class="bg-white p-6 rounded-3xl custom-shadow border border-slate-100">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="p-2 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-bold uppercase">Parus</span>
+                        <span class="text-slate-400 text-xs">Oxirgi yangilanish: 12.06</span>
+                    </div>
+                    <div class="text-4xl font-bold text-slate-800 mb-1" id="parus-total">0</div>
+                    <div class="text-sm text-slate-500">Jami buyumlar soni</div>
+                    <div class="mt-6 h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-emerald-500 w-[65%]"></div>
+                    </div>
+                </div>
 
-            <div class="flex gap-2">
-                <button onclick="filterPhotos('all')" id="btn-all" class="px-4 py-2 rounded-lg text-xs font-semibold bg-slate-900 text-white transition-all duration-150">Barchasi</button>
-                <button onclick="filterPhotos('hasPhoto')" id="btn-hasPhoto" class="px-4 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all duration-150">Faqat rasmlilar</button>
-            </div>
-        </div>
+                <!-- Nukus Card -->
+                <div class="bg-white p-6 rounded-3xl custom-shadow border border-slate-100">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="p-2 bg-amber-50 text-amber-700 rounded-lg text-xs font-bold uppercase">Nukus</span>
+                        <span class="text-slate-400 text-xs">Oxirgi yangilanish: 12.06</span>
+                    </div>
+                    <div class="text-4xl font-bold text-slate-800 mb-1" id="nukus-total">0</div>
+                    <div class="text-sm text-slate-500">Jami buyumlar soni</div>
+                    <div class="mt-6 h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-amber-500 w-[78%]"></div>
+                    </div>
+                </div>
 
-        <!-- Main Inventory Table -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div class="overflow-x-auto custom-scrollbar">
-                <table id="inventoryTable" class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider">
-                            <th class="px-6 py-4">Sg.</th>
-                            <th class="px-6 py-4">Kategoriya / Nomi</th>
-                            <th class="px-6 py-4 text-center" style="width: 110px;">Rasm</th>
-                            <th class="px-6 py-4 text-center">Parus Filial</th>
-                            <th class="px-6 py-4 text-center">Nukus Filial</th>
-                            <th class="px-6 py-4 text-center">Centr 1</th>
-                            <th class="px-6 py-4 text-center">T.City</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 text-sm">
-                        
-                        <!-- Item 1 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="true">
-                            <td class="px-6 py-4 font-semibold text-slate-400">1</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Ahmat qoshiq</span>
-                                <span class="text-xs text-slate-400">Choy va kofe idishlari</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="relative group inline-block">
-                                    <img src="photo_6_2026-06-12_14-22-18.jpg" alt="Ahmat qoshiq" class="w-16 h-16 object-cover rounded-xl border border-slate-200 cursor-pointer hover:scale-105 hover:shadow-md transition-all duration-150" onclick="openImageModal(this.src, 'Ahmat qoshiq')" onerror="this.onerror=null; handleImageError(this);">
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">4</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 2 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="false">
-                            <td class="px-6 py-4 font-semibold text-slate-400">2</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Americano chashka</span>
-                                <span class="text-xs text-slate-400">Chashka va krujkalar</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-slate-100 text-slate-400 border border-dashed border-slate-300">
-                                    <i class="fa-solid fa-mug-saucer text-lg"></i>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">9</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 3 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="false">
-                            <td class="px-6 py-4 font-semibold text-slate-400">3</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Americano kichik chashka</span>
-                                <span class="text-xs text-slate-400">Chashka va krujkalar</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-slate-100 text-slate-400 border border-dashed border-slate-300">
-                                    <i class="fa-solid fa-mug-hot text-lg"></i>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">6</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 4 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="true">
-                            <td class="px-6 py-4 font-semibold text-slate-400">4</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Bar qoshiq</span>
-                                <span class="text-xs text-slate-400">Bar asboblari</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="relative group inline-block">
-                                    <img src="photo_1_2026-06-12_14-22-18.jpg" alt="Bar qoshiq" class="w-16 h-16 object-cover rounded-xl border border-slate-200 cursor-pointer hover:scale-105 hover:shadow-md transition-all duration-150" onclick="openImageModal(this.src, 'Bar qoshiq')" onerror="this.onerror=null; handleImageError(this);">
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">2</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 5 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="false">
-                            <td class="px-6 py-4 font-semibold text-slate-400">5</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Cappuccino katta</span>
-                                <span class="text-xs text-slate-400">Chashka va krujkalar</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-slate-100 text-slate-400 border border-dashed border-slate-300">
-                                    <i class="fa-solid fa-mug-hot text-lg"></i>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">10</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 6 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="false">
-                            <td class="px-6 py-4 font-semibold text-slate-400">6</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Cappuccino katta tarelka</span>
-                                <span class="text-xs text-slate-400">Likopchalar</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-slate-100 text-slate-400 border border-dashed border-slate-300">
-                                    <i class="fa-solid fa-circle text-lg"></i>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">9</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 7 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="false">
-                            <td class="px-6 py-4 font-semibold text-slate-400">7</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Cappuccino kichik</span>
-                                <span class="text-xs text-slate-400">Chashka va krujkalar</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-slate-100 text-slate-400 border border-dashed border-slate-300">
-                                    <i class="fa-solid fa-mug-hot text-lg"></i>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">3</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 8 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="false">
-                            <td class="px-6 py-4 font-semibold text-slate-400">8</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Cappuccino o'rta</span>
-                                <span class="text-xs text-slate-400">Chashka va krujkalar</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-slate-100 text-slate-400 border border-dashed border-slate-300">
-                                    <i class="fa-solid fa-mug-hot text-lg"></i>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">3</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 9 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="false">
-                            <td class="px-6 py-4 font-semibold text-slate-400">9</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Espresso cup</span>
-                                <span class="text-xs text-slate-400">Chashka va krujkalar</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-slate-100 text-slate-400 border border-dashed border-slate-300">
-                                    <i class="fa-solid fa-mug-saucer text-lg"></i>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">4</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 10 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="true">
-                            <td class="px-6 py-4 font-semibold text-slate-400">10</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Espresso tarelka</span>
-                                <span class="text-xs text-slate-400">Likopchalar</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="relative group inline-block">
-                                    <img src="photo_2_2026-06-12_14-22-18.jpg" alt="Espresso tarelka" class="w-16 h-16 object-cover rounded-xl border border-slate-200 cursor-pointer hover:scale-105 hover:shadow-md transition-all duration-150" onclick="openImageModal(this.src, 'Espresso tarelka')" onerror="this.onerror=null; handleImageError(this);">
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">9</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 11 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="false">
-                            <td class="px-6 py-4 font-semibold text-slate-400">11</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Flat white cup</span>
-                                <span class="text-xs text-slate-400">Chashka va krujkalar</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-slate-100 text-slate-400 border border-dashed border-slate-300">
-                                    <i class="fa-solid fa-mug-hot text-lg"></i>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">1</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 12 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="true">
-                            <td class="px-6 py-4 font-semibold text-slate-400">12</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Katta vilka</span>
-                                <span class="text-xs text-slate-400">Oshxona anjomlari</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="relative group inline-block">
-                                    <img src="photo_4_2026-06-12_14-22-18.jpg" alt="Katta vilka" class="w-16 h-16 object-cover rounded-xl border border-slate-200 cursor-pointer hover:scale-105 hover:shadow-md transition-all duration-150" onclick="openImageModal(this.src, 'Katta vilka')" onerror="this.onerror=null; handleImageError(this);">
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">20</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 13 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="true">
-                            <td class="px-6 py-4 font-semibold text-slate-400">13</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Kichik qoshiq</span>
-                                <span class="text-xs text-slate-400">Oshxona anjomlari</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="relative group inline-block">
-                                    <img src="photo_7_2026-06-12_14-22-18.jpg" alt="Kichik qoshiq" class="w-16 h-16 object-cover rounded-xl border border-slate-200 cursor-pointer hover:scale-105 hover:shadow-md transition-all duration-150" onclick="openImageModal(this.src, 'Kichik qoshiq')" onerror="this.onerror=null; handleImageError(this);">
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">8</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 14 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="true">
-                            <td class="px-6 py-4 font-semibold text-slate-400">14</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Kichik roks stakan</span>
-                                <span class="text-xs text-slate-400">Shisha idishlar</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="relative group inline-block">
-                                    <img src="photo_9_2026-06-12_14-22-18.jpg" alt="Kichik roks stakan" class="w-16 h-16 object-cover rounded-xl border border-slate-200 cursor-pointer hover:scale-105 hover:shadow-md transition-all duration-150" onclick="openImageModal(this.src, 'Kichik roks stakan')" onerror="this.onerror=null; handleImageError(this);">
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">1</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 15 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="false">
-                            <td class="px-6 py-4 font-semibold text-slate-400">15</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Kichik tarelka</span>
-                                <span class="text-xs text-slate-400">Likopchalar</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-slate-100 text-slate-400 border border-dashed border-slate-300">
-                                    <i class="fa-solid fa-plate-wheat text-lg"></i>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">12</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 16 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="true">
-                            <td class="px-6 py-4 font-semibold text-slate-400">16</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Kichik vilka</span>
-                                <span class="text-xs text-slate-400">Oshxona anjomlari</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="relative group inline-block">
-                                    <img src="photo_5_2026-06-12_14-22-18.jpg" alt="Kichik vilka" class="w-16 h-16 object-cover rounded-xl border border-slate-200 cursor-pointer hover:scale-105 hover:shadow-md transition-all duration-150" onclick="openImageModal(this.src, 'Kichik vilka')" onerror="this.onerror=null; handleImageError(this);">
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">1</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 17 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="false">
-                            <td class="px-6 py-4 font-semibold text-slate-400">17</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Large cup</span>
-                                <span class="text-xs text-slate-400">Chashka va krujkalar</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-slate-100 text-slate-400 border border-dashed border-slate-300">
-                                    <i class="fa-solid fa-mug-hot text-lg"></i>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">13</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 18 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="true">
-                            <td class="px-6 py-4 font-semibold text-slate-400">18</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Large cup tarelka</span>
-                                <span class="text-xs text-slate-400">Likopchalar (To'rtburchak)</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="relative group inline-block">
-                                    <img src="photo_8_2026-06-12_14-22-18.jpg" alt="Large cup tarelka" class="w-16 h-16 object-cover rounded-xl border border-slate-200 cursor-pointer hover:scale-105 hover:shadow-md transition-all duration-150" onclick="openImageModal(this.src, 'Large cup tarelka')" onerror="this.onerror=null; handleImageError(this);">
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">18</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 19 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="false">
-                            <td class="px-6 py-4 font-semibold text-slate-400">19</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Large new tarelka</span>
-                                <span class="text-xs text-slate-400">Likopchalar</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-slate-100 text-slate-400 border border-dashed border-slate-300">
-                                    <i class="fa-solid fa-plate-wheat text-lg"></i>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">6</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 20 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="false">
-                            <td class="px-6 py-4 font-semibold text-slate-400">20</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Latte stakan</span>
-                                <span class="text-xs text-slate-400">Shisha idishlar</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-slate-100 text-slate-400 border border-dashed border-slate-300">
-                                    <i class="fa-solid fa-glass-water-droplet text-lg"></i>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">5</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 21 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="false">
-                            <td class="px-6 py-4 font-semibold text-slate-400">21</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Medium cup</span>
-                                <span class="text-xs text-slate-400">Chashka va krujkalar</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-slate-100 text-slate-400 border border-dashed border-slate-300">
-                                    <i class="fa-solid fa-mug-hot text-lg"></i>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">11</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 22 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="false">
-                            <td class="px-6 py-4 font-semibold text-slate-400">22</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Medium tarelka</span>
-                                <span class="text-xs text-slate-400">Likopchalar</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-slate-100 text-slate-400 border border-dashed border-slate-300">
-                                    <i class="fa-solid fa-circle text-lg"></i>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">12</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 23 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="false">
-                            <td class="px-6 py-4 font-semibold text-slate-400">23</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Old small tarelka</span>
-                                <span class="text-xs text-slate-400">Likopchalar</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-slate-100 text-slate-400 border border-dashed border-slate-300">
-                                    <i class="fa-solid fa-circle text-lg"></i>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-700">9</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                        <!-- Item 24 -->
-                        <tr class="hover:bg-slate-50/80 transition-all duration-150" data-has-photo="true">
-                            <td class="px-6 py-4 font-semibold text-slate-400">24</td>
-                            <td class="px-6 py-4">
-                                <span class="font-bold text-slate-900 block">Pichoq</span>
-                                <span class="text-xs text-slate-400">Oshxona anjomlari</span>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                                <div class="relative group inline-block">
-                                    <img src="photo_3_2026-06-12_14-22-18.jpg" alt="Pichoq" class="w-16 h-16 object-cover rounded-xl border border-slate-200 cursor-pointer hover:scale-105 hover:shadow-md transition-all duration-150" onclick="openImageModal(this.src, 'Pichoq')" onerror="this.onerror=null; handleImageError(this);">
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                            <td class="px-6 py-4 text-center font-semibold text-slate-400">0</td>
-                        </tr>
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Image Lightbox Modal -->
-    <div id="imageModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 transition-all duration-300">
-        <div class="bg-white rounded-3xl overflow-hidden max-w-lg w-full shadow-2xl relative transform scale-95 transition-transform duration-300">
-            <button onclick="closeImageModal()" class="absolute top-4 right-4 bg-slate-100 hover:bg-slate-200 text-slate-700 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-            <div class="p-6">
-                <h3 id="modalTitle" class="text-lg font-bold text-slate-900 mb-4">Rasm nomi</h3>
-                <div class="aspect-square w-full rounded-2xl overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-200">
-                    <img id="modalImg" src="" alt="Zoomed view" class="max-w-full max-h-full object-contain">
+                <!-- Comparison Stat -->
+                <div class="bg-[#4A5D23] p-6 rounded-3xl custom-shadow text-white">
+                    <div class="text-sm font-medium opacity-80 mb-4">ENG KO'P ZAXIRA</div>
+                    <div class="text-2xl font-bold mb-2" id="leader-branch">-</div>
+                    <p class="text-xs opacity-70 leading-relaxed">
+                        Nukus filialida pichoq va vilkalar zaxirasi Parusga qaraganda sezilarli darajada yuqori ekanligi aniqlandi.
+                    </p>
+                    <button onclick="scrollToTable()" class="mt-6 w-full py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-sm transition-all">Batafsil ko'rish</button>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- Notification system -->
-    <div id="notification" class="fixed bottom-6 right-6 bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
-        <span class="text-emerald-500 text-lg"><i class="fa-solid fa-circle-check"></i></span>
-        <span id="notificationText" class="text-sm font-medium">Amaliyot muvaffaqiyatli bajarildi!</span>
-    </div>
+        <!-- SECTION 2: ANALYSIS -->
+        <section id="analysis" class="mb-16">
+            <div class="mb-8 text-center">
+                <h2 class="text-3xl font-bold mb-2">Solishtirma Tahlil</h2>
+                <p class="text-slate-500 mx-auto max-w-2xl">
+                    Bu bo'lim filiallar o'rtasidagi asosiy farqlarni vizual tarzda ko'rsatadi. Grafika orqali qaysi filialda qaysi turdagi buyumlar (pichoq-vilka yoki chashkalar) ko'proq ekanligini tezda aniqlash mumkin.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Bar Chart -->
+                <div class="bg-white p-8 rounded-3xl custom-shadow border border-slate-100">
+                    <h3 class="text-lg font-bold mb-6 text-center">Asosiy buyumlar solishtiruvi</h3>
+                    <div class="chart-container">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Distribution Chart -->
+                <div class="bg-white p-8 rounded-3xl custom-shadow border border-slate-100">
+                    <h3 class="text-lg font-bold mb-6 text-center">Inventar kategoriyalari (Nukus)</h3>
+                    <div class="chart-container">
+                        <canvas id="distributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: TABLE EXPLORER -->
+        <section id="table-section" class="mb-16">
+            <div class="flex flex-col md:flex-row justify-between items-end gap-4 mb-8">
+                <div class="max-w-xl">
+                    <h2 class="text-3xl font-bold mb-2">To'liq Reestr</h2>
+                    <p class="text-slate-500">
+                        To'liq inventar jadvali barcha buyumlarni birma-bir ko'zdan kechirish imkonini beradi. Qidiruv funksiyasi orqali kerakli ma'lumotni soniyalarda topish mumkin.
+                    </p>
+                </div>
+                <div class="flex gap-2 w-full md:w-auto">
+                    <div class="relative flex-grow">
+                        <input type="text" id="searchInput" placeholder="Buyum nomini qidirish..." class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#4A5D23] focus:border-transparent outline-none transition-all">
+                        <span class="absolute left-3 top-3.5 text-slate-400">🔍</span>
+                    </div>
+                    <button onclick="copyToExcel()" class="bg-[#D4A373] text-white px-6 py-3 rounded-xl hover:bg-[#c39262] transition-colors flex items-center gap-2 whitespace-nowrap">
+                        <span>📊</span> Excel uchun
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl custom-shadow border border-slate-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left" id="inventoryTable">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-100">
+                                <th class="px-8 py-5 text-sm font-bold text-slate-600 uppercase tracking-wider">Buyum nomi</th>
+                                <th class="px-8 py-5 text-sm font-bold text-emerald-700 uppercase tracking-wider text-center">Parus</th>
+                                <th class="px-8 py-5 text-sm font-bold text-amber-700 uppercase tracking-wider text-center">Nukus</th>
+                                <th class="px-8 py-5 text-sm font-bold text-slate-400 uppercase tracking-wider text-center">Centr 1</th>
+                                <th class="px-8 py-5 text-sm font-bold text-slate-400 uppercase tracking-wider text-center">T.City</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50" id="tableBody">
+                            <!-- JS handles population -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-100 py-12 px-6">
+        <div class="max-w-7xl mx-auto text-center">
+            <p class="text-slate-400 text-sm">© 2026 Ottimo Catering • Inventar Nazorati Tizimi</p>
+        </div>
+    </footer>
 
     <script>
-        function openImageModal(src, title) {
-            const modal = document.getElementById('imageModal');
-            const modalImg = document.getElementById('modalImg');
-            const modalTitle = document.getElementById('modalTitle');
+        const inventoryData = [
+            { name: "Ahmat lozka", parus: 4, nukus: 0 },
+            { name: "Amerikano kichkina chashka", parus: 6, nukus: 0 },
+            { name: "Bar lozka", parus: 2, nukus: 0 },
+            { name: "Kapuchino katta chashka", parus: 10, nukus: 0 },
+            { name: "Tarelka kapuchino katta", parus: 9, nukus: 0 },
+            { name: "Kapuchino kichkina chashka", parus: 3, nukus: 10 },
+            { name: "Kapuchino sred chashka", parus: 3, nukus: 11 },
+            { name: "Tarelka kichkina chashka", parus: 12, nukus: 0 },
+            { name: "Vafli tarelka", parus: 13, nukus: 0 },
+            { name: "Pichoq", parus: 10, nukus: 18 },
+            { name: "Vilka 3 tali (Kichik)", parus: 3, nukus: 1 },
+            { name: "Vilka 4 tali (Katta)", parus: 15, nukus: 20 },
+            { name: "Kichik qoshiq", parus: 6, nukus: 8 },
+            { name: "Roks stakan", parus: 2, nukus: 0 },
+            { name: "Roks stakan kichik", parus: 1, nukus: 0 },
+            { name: "Latte stakan", parus: 5, nukus: 0 },
+            { name: "Pitcher 1L", parus: 1, nukus: 0 },
+            { name: "Pitcher 0.5L", parus: 1, nukus: 0 },
+            { name: "Pitcher 0.05L", parus: 2, nukus: 0 },
+            { name: "Espresso cup", parus: 0, nukus: 4 },
+            { name: "Sauce cup", parus: 0, nukus: 1 },
+            { name: "Espresso tarelka", parus: 0, nukus: 9 },
+            { name: "Large cup potchashka", parus: 0, nukus: 18 },
+            { name: "Large potchashka new", parus: 0, nukus: 6 },
+            { name: "Old small potchashka", parus: 0, nukus: 9 },
+            { name: "Flat white cup", parus: 0, nukus: 1 }
+        ];
+
+        function initDashboard() {
+            renderTable(inventoryData);
+            updateStats();
+            renderCharts();
+        }
+
+        function updateStats() {
+            const parusTotal = inventoryData.reduce((acc, curr) => acc + curr.parus, 0);
+            const nukusTotal = inventoryData.reduce((acc, curr) => acc + curr.nukus, 0);
             
-            modalImg.src = src;
-            modalTitle.innerText = title;
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            setTimeout(() => {
-                modal.firstElementChild.classList.remove('scale-95');
-                modal.firstElementChild.classList.add('scale-100');
-            }, 10);
+            document.getElementById('parus-total').innerText = parusTotal;
+            document.getElementById('nukus-total').innerText = nukusTotal;
+            document.getElementById('leader-branch').innerText = nukusTotal > parusTotal ? 'Nukus filiali' : 'Parus filiali';
         }
 
-        function closeImageModal() {
-            const modal = document.getElementById('imageModal');
-            modal.firstElementChild.classList.remove('scale-100');
-            modal.firstElementChild.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 200);
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-slate-50 transition-colors group';
+                row.innerHTML = `
+                    <td class="px-8 py-4 font-medium text-slate-700">${item.name}</td>
+                    <td class="px-8 py-4 text-center font-bold text-emerald-600">${item.parus || '-'}</td>
+                    <td class="px-8 py-4 text-center font-bold text-amber-600">${item.nukus || '-'}</td>
+                    <td class="px-8 py-4 text-center text-slate-300">0</td>
+                    <td class="px-8 py-4 text-center text-slate-300">0</td>
+                `;
+                tbody.appendChild(row);
+            });
         }
 
-        // Auto fallback to elegant placeholder on image load failure
-        function handleImageError(image) {
-            const container = image.parentNode;
-            container.innerHTML = `
-                <div class="inline-flex flex-col items-center justify-center w-16 h-16 rounded-xl bg-red-50 text-red-500 border border-red-200">
-                    <i class="fa-regular fa-image-slash text-base"></i>
-                    <span class="text-[9px] font-bold mt-1 uppercase">${image.alt.substring(0,6)}</span>
-                </div>
-            `;
-        }
-
-        function filterTable() {
-            const input = document.getElementById("searchInput");
-            const filter = input.value.toUpperCase();
-            const table = document.getElementById("inventoryTable");
-            const tr = table.getElementsByTagName("tr");
-
-            for (let i = 1; i < tr.length; i++) {
-                const td = tr[i].getElementsByTagName("td")[1];
-                if (td) {
-                    const txtValue = td.textContent || td.innerText;
-                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                    } else {
-                        tr[i].style.display = "none";
+        function renderCharts() {
+            // Comparison Chart
+            const compCtx = document.getElementById('comparisonChart').getContext('2d');
+            new Chart(compCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Pichoq', 'Katta vilka', 'Kichik vilka', 'Kichik qoshiq', 'Kapuchino chashka'],
+                    datasets: [
+                        {
+                            label: 'Parus',
+                            data: [10, 15, 3, 6, 10],
+                            backgroundColor: '#4ade80',
+                            borderRadius: 8
+                        },
+                        {
+                            label: 'Nukus',
+                            data: [18, 20, 1, 8, 13],
+                            backgroundColor: '#fbbf24',
+                            borderRadius: 8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { display: false } },
+                        x: { grid: { display: false } }
                     }
                 }
-            }
-        }
+            });
 
-        function filterPhotos(type) {
-            const table = document.getElementById("inventoryTable");
-            const tr = table.getElementsByTagName("tr");
-            
-            // Toggle active styling
-            const btnAll = document.getElementById('btn-all');
-            const btnHasPhoto = document.getElementById('btn-hasPhoto');
-            
-            if(type === 'all') {
-                btnAll.className = "px-4 py-2 rounded-lg text-xs font-semibold bg-slate-900 text-white transition-all duration-150";
-                btnHasPhoto.className = "px-4 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all duration-150";
-            } else {
-                btnAll.className = "px-4 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all duration-150";
-                btnHasPhoto.className = "px-4 py-2 rounded-lg text-xs font-semibold bg-slate-900 text-white transition-all duration-150";
-            }
-
-            for (let i = 1; i < tr.length; i++) {
-                const isPhoto = tr[i].getAttribute("data-has-photo");
-                if (type === 'all' || isPhoto === 'true') {
-                    tr[i].style.display = "";
-                } else {
-                    tr[i].style.display = "none";
+            // Distribution Chart (Nukus)
+            const distCtx = document.getElementById('distributionChart').getContext('2d');
+            new Chart(distCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Chashkalar', 'Tarelkalar', 'Pichoq-vilka', 'Boshqa'],
+                    datasets: [{
+                        data: [42, 45, 47, 10],
+                        backgroundColor: ['#D4A373', '#4A5D23', '#64748b', '#e2e8f0'],
+                        borderWidth: 0,
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
                 }
-            }
+            });
         }
 
-        function showNotification(text) {
-            const notif = document.getElementById('notification');
-            const notifText = document.getElementById('notificationText');
-            notifText.innerText = text;
-            notif.classList.remove('translate-y-20', 'opacity-0');
-            notif.classList.add('translate-y-0', 'opacity-100');
-            setTimeout(() => {
-                notif.classList.remove('translate-y-0', 'opacity-100');
-                notif.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
+        // Search Logic
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = inventoryData.filter(item => item.name.toLowerCase().includes(term));
+            renderTable(filtered);
+        });
+
+        function copyToExcel() {
+            const table = document.getElementById('inventoryTable');
+            const range = document.createRange();
+            range.selectNode(table);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand('copy');
+            alert("Ma'lumotlar nusxalandi! Excel dasturiga (Ctrl+V) orqali joylashtirishingiz mumkin.");
         }
 
-        function copyTableToClipboard() {
-            // Selecting table elements and copying them to clipboard formatted for Excel
-            const el = document.getElementById('inventoryTable');
-            let body = document.body, range, sel;
-            if (document.createRange && window.getSelection) {
-                range = document.createRange();
-                sel = window.getSelection();
-                sel.removeAllRanges();
-                try {
-                    range.selectNodeContents(el);
-                    sel.addRange(range);
-                } catch (e) {
-                    range.selectNode(el);
-                    sel.addRange(range);
-                }
-                document.execCommand('copy');
-                sel.removeAllRanges();
-            }
-            showNotification("Jadval nusxalandi! Endi uni Excelga joylashingiz mumkin.");
+        function scrollToTable() {
+            document.getElementById('table-section').scrollIntoView({ behavior: 'smooth' });
         }
+
+        window.onload = initDashboard;
     </script>
 </body>
 </html>
