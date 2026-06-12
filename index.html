@@ -14,16 +14,27 @@
 <body class="text-slate-900 pb-20">
 
     <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200 py-6 px-6">
-        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <h1 class="text-2xl font-bold text-[#4A5D23]">OTTIMO <span class="font-light text-slate-500">KATALOG</span></h1>
-            <div id="filter-nav" class="flex flex-wrap gap-2 justify-center">
-                <button onclick="filterItems('all')" class="px-4 py-2 bg-[#4A5D23] text-white rounded-lg text-sm font-medium">Barchasi</button>
-                <button onclick="filterItems('Qoshiqlar')" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-sm font-medium">Qoshiqlar</button>
-                <button onclick="filterItems('Vilkalar')" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-sm font-medium">Vilkalar</button>
-                <button onclick="filterItems('Tarelkalar')" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-sm font-medium">Tarelkalar</button>
-                <button onclick="filterItems('Stakanlar')" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-sm font-medium">Stakanlar</button>
-                <button onclick="filterItems('Chashkalar')" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-sm font-medium">Chashkalar</button>
-                <button onclick="filterItems('Kofe anjomlari')" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-sm font-medium">Kofe anjomlari</button>
+        <div class="max-w-6xl mx-auto flex flex-col gap-6">
+            <h1 class="text-2xl font-bold text-[#4A5D23] text-center md:text-left">OTTIMO <span class="font-light text-slate-500">KATALOG</span></h1>
+            
+            <!-- Filial Filtrlari -->
+            <div id="branch-nav" class="flex flex-wrap gap-2 justify-center md:justify-start border-b border-slate-100 pb-4">
+                <span class="text-sm font-bold text-slate-400 self-center mr-2 uppercase">Filial:</span>
+                <button onclick="applyFilters('branch', 'all')" class="px-4 py-2 bg-[#4A5D23] text-white rounded-lg text-sm font-medium branch-btn">Barchasi</button>
+                <button onclick="applyFilters('branch', 'Parus')" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-sm font-medium branch-btn">Parus</button>
+                <button onclick="applyFilters('branch', 'Nukus')" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-sm font-medium branch-btn">Nukus</button>
+            </div>
+
+            <!-- Kategoriya Filtrlari -->
+            <div id="category-nav" class="flex flex-wrap gap-2 justify-center md:justify-start">
+                <span class="text-sm font-bold text-slate-400 self-center mr-2 uppercase">Turkum:</span>
+                <button onclick="applyFilters('category', 'all')" class="px-4 py-2 bg-slate-200 rounded-lg text-sm font-medium category-btn">Barchasi</button>
+                <button onclick="applyFilters('category', 'Qoshiqlar')" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-sm font-medium category-btn">Qoshiqlar</button>
+                <button onclick="applyFilters('category', 'Vilkalar')" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-sm font-medium category-btn">Vilkalar</button>
+                <button onclick="applyFilters('category', 'Tarelkalar')" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-sm font-medium category-btn">Tarelkalar</button>
+                <button onclick="applyFilters('category', 'Stakanlar')" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-sm font-medium category-btn">Stakanlar</button>
+                <button onclick="applyFilters('category', 'Chashkalar')" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-sm font-medium category-btn">Chashkalar</button>
+                <button onclick="applyFilters('category', 'Kofe anjomlari')" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-sm font-medium category-btn">Kofe anjomlari</button>
             </div>
         </div>
     </header>
@@ -36,27 +47,20 @@
 
     <script>
         const inventoryItems = [
-            { id: 1, name: "Bar qoshiq (fork end)", file: "photo_1_2026-06-12_14-22-18_2.jpg", category: "Qoshiqlar" },
-            { id: 2, name: "Saucer (Tarelka)", file: "photo_2_2026-06-12_14-22-18_2.jpg", category: "Tarelkalar" },
-            { id: 3, name: "Pichoq", file: "photo_3_2026-06-12_14-22-18_2.jpg", category: "Pichoqlar" },
-            { id: 4, name: "Katta vilka", file: "photo_4_2026-06-12_14-22-18_2.jpg", category: "Vilkalar" },
-            { id: 5, name: "Kichik vilka", file: "photo_5_2026-06-12_14-22-18_2.jpg", category: "Vilkalar" },
-            { id: 6, name: "Ahmad Tea qoshiq", file: "photo_6_2026-06-12_14-22-18_2.jpg", category: "Qoshiqlar" },
-            { id: 7, name: "Choy qoshiq", file: "photo_7_2026-06-12_14-22-18_2.jpg", category: "Qoshiqlar" },
-            { id: 8, name: "Kvadrat tarelka", file: "photo_8_2026-06-12_14-22-18_2.jpg", category: "Tarelkalar" },
-            { id: 9, name: "Stakan", file: "photo_9_2026-06-12_14-22-18_2.jpg", category: "Stakanlar" },
-            { id: 10, name: "Stakan", file: "photo_10_2026-06-12_14-22-18.jpg", category: "Stakanlar" },
-            { id: 11, name: "Irish Coffee Stakan", file: "photo_11_2026-06-12_14-22-18.jpg", category: "Stakanlar" },
-            { id: 12, name: "Pitcher 0.6L", file: "photo_12_2026-06-12_14-22-18.jpg", category: "Kofe anjomlari" },
-            { id: 13, name: "Pitcher 0.35L", file: "photo_13_2026-06-12_14-22-18.jpg", category: "Kofe anjomlari" },
-            { id: 14, name: "Pitcher 0.15L", file: "photo_14_2026-06-12_14-22-18.jpg", category: "Kofe anjomlari" },
-            { id: 15, name: "Oq Chashka (Katta)", file: "photo_15_2026-06-12_14-22-18.jpg", category: "Chashkalar" },
-            { id: 16, name: "Oq Chashka (O'rta)", file: "photo_16_2026-06-12_14-22-18.jpg", category: "Chashkalar" },
-            { id: 17, name: "Oq Chashka (Kichik)", file: "photo_17_2026-06-12_14-22-18.jpg", category: "Chashkalar" },
-            { id: 18, name: "Oq Chashka", file: "photo_18_2026-06-12_14-22-18.jpg", category: "Chashkalar" },
-            { id: 19, name: "Saucer (Kichik)", file: "photo_19_2026-06-12_14-22-18.jpg", category: "Tarelkalar" },
-            { id: 20, name: "Saucer (Katta)", file: "photo_20_2026-06-12_14-22-18.jpg", category: "Tarelkalar" }
+            { name: "Bar qoshiq", file: "photo_1_2026-06-12_14-22-18_2.jpg", category: "Qoshiqlar", branches: ["Parus"] },
+            { name: "Saucer (Tarelka)", file: "photo_2_2026-06-12_14-22-18_2.jpg", category: "Tarelkalar", branches: ["Parus", "Nukus"] },
+            { name: "Katta vilka", file: "photo_4_2026-06-12_14-22-18_2.jpg", category: "Vilkalar", branches: ["Parus", "Nukus"] },
+            { name: "Kichik vilka", file: "photo_5_2026-06-12_14-22-18_2.jpg", category: "Vilkalar", branches: ["Parus", "Nukus"] },
+            { name: "Ahmad Tea qoshiq", file: "photo_6_2026-06-12_14-22-18_2.jpg", category: "Qoshiqlar", branches: ["Parus"] },
+            { name: "Choy qoshiq", file: "photo_7_2026-06-12_14-22-18_2.jpg", category: "Qoshiqlar", branches: ["Parus", "Nukus"] },
+            { name: "Stakan", file: "photo_9_2026-06-12_14-22-18_2.jpg", category: "Stakanlar", branches: ["Parus", "Nukus"] },
+            { name: "Irish Coffee Stakan", file: "photo_11_2026-06-12_14-22-18.jpg", category: "Stakanlar", branches: ["Parus"] },
+            { name: "Pitcher 0.6L", file: "photo_12_2026-06-12_14-22-18.jpg", category: "Kofe anjomlari", branches: ["Parus"] },
+            { name: "Oq Chashka (Katta)", file: "photo_15_2026-06-12_14-22-18.jpg", category: "Chashkalar", branches: ["Parus", "Nukus"] }
         ];
+
+        let currentBranch = 'all';
+        let currentCategory = 'all';
 
         function renderItems(items) {
             const grid = document.getElementById('gallery-grid');
@@ -66,21 +70,28 @@
                         <img src="${item.file}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x400/e2e8f0/64748b?text=Rasm+topilmadi'">
                     </div>
                     <h3 class="font-semibold text-slate-800">${item.name}</h3>
-                    <p class="text-xs text-slate-400 mt-1 uppercase tracking-wider">${item.category}</p>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded uppercase font-bold text-slate-500">${item.category}</span>
+                        ${item.branches.map(b => `<span class="text-[10px] ${b === 'Parus' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'} px-2 py-0.5 rounded uppercase font-bold">${b}</span>`).join('')}
+                    </div>
                 </div>
             `).join('');
         }
 
-        function filterItems(category) {
-            if (category === 'all') {
-                renderItems(inventoryItems);
-            } else {
-                const filtered = inventoryItems.filter(i => i.category === category);
-                renderItems(filtered);
-            }
+        function applyFilters(type, value) {
+            if (type === 'branch') currentBranch = value;
+            if (type === 'category') currentCategory = value;
+
+            const filtered = inventoryItems.filter(item => {
+                const matchesBranch = currentBranch === 'all' || item.branches.includes(currentBranch);
+                const matchesCategory = currentCategory === 'all' || item.category === currentCategory;
+                return matchesBranch && matchesCategory;
+            });
+
+            renderItems(filtered);
         }
 
-        // Initial render
+        // Boshlang'ich render
         renderItems(inventoryItems);
     </script>
 </body>
