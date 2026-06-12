@@ -42,12 +42,16 @@
     </main>
 
     <script>
+        /* 
+           O'zgartirish uchun yo'riqnoma:
+           1. Rasmingizni papkaga tashlang (masalan: qoshiq.jpg).
+           2. Pastdagi ro'yxatga yangi qator qo'shing: 
+              { name: "Nomi", file: "qoshiq.jpg", category: "Qoshiqlar", branches: ["Parus", "Nukus"] },
+        */
         const inventoryItems = [
             { name: "Bar qoshiq", file: "bar_qoshiq.jpg", category: "Qoshiqlar", branches: ["Parus"] },
             { name: "Saucer (Tarelka)", file: "tarelka.jpg", category: "Tarelkalar", branches: ["Parus", "Nukus"] },
             { name: "Katta vilka", file: "katta_vilka.jpg", category: "Vilkalar", branches: ["Parus", "Nukus"] }
-            // Fayllaringizni shu yerga qo'shib boring:
-            // { name: "Nomi", file: "fayl_nomi.jpg", category: "Kategoriya", branches: ["Parus"] }
         ];
 
         let currentBranch = 'all';
@@ -55,13 +59,17 @@
 
         function renderItems(items) {
             const grid = document.getElementById('gallery-grid');
+            if (items.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-20 text-slate-400">Bu kategoriyada yoki filialda buyum topilmadi.</div>';
+                return;
+            }
             grid.innerHTML = items.map(item => `
                 <div class="item-card bg-white p-4 rounded-2xl shadow-sm border border-slate-100 transition-all hover:shadow-md">
-                    <div class="aspect-square bg-slate-50 rounded-xl mb-4 overflow-hidden flex items-center justify-center relative">
+                    <div class="aspect-square bg-slate-50 rounded-xl mb-4 overflow-hidden flex items-center justify-center relative border border-slate-100">
                         <img src="${item.file}" alt="${item.name}" class="w-full h-full object-cover" 
                              onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden')">
                         <div class="hidden text-[10px] text-slate-400 p-2 text-center break-all">
-                            Rasm topilmadi: <br><strong>${item.file}</strong>
+                            Rasm topilmadi yoki yuklanmagan:<br><strong>${item.file}</strong>
                         </div>
                     </div>
                     <h3 class="font-semibold text-slate-800">${item.name}</h3>
@@ -73,8 +81,17 @@
         }
 
         function applyFilters(type, value) {
-            if (type === 'branch') currentBranch = value;
-            if (type === 'category') currentCategory = value;
+            // Tugmalarni rangini o'zgartirish
+            if(type === 'branch') {
+                currentBranch = value;
+                document.querySelectorAll('.branch-btn').forEach(btn => {
+                    btn.classList.toggle('bg-[#4A5D23]', btn.innerText.includes(value) || (value === 'all' && btn.innerText.includes('Barchasi')));
+                    btn.classList.toggle('text-white', btn.innerText.includes(value) || (value === 'all' && btn.innerText.includes('Barchasi')));
+                });
+            }
+            if(type === 'category') {
+                currentCategory = value;
+            }
 
             const filtered = inventoryItems.filter(item => {
                 const matchesBranch = currentBranch === 'all' || item.branches.includes(currentBranch);
