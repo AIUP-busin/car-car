@@ -1,345 +1,263 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ottimo Catering | Inventar Strategik Tahlili</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
-        
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #F8FAFC;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ottimo — Inventar</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1A5C38;
+  --green2:#2E7D32;
+  --green3:#43A047;
+  --light:#E8F5E9;
+  --bg:#F7FAF7;
+  --white:#fff;
+  --text:#1B1B1B;
+  --text2:#555;
+  --gold:#F9A825;
+  --border:#D4E8D4;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 650px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 320px;
-            max-height: 400px;
-        }
+/* HEADER */
+.header{background:var(--green);padding:2rem;text-align:center}
+.header-logo{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:#fff;letter-spacing:-1px;margin-bottom:4px}
+.header-logo span{color:#A5D6A7}
+.header-sub{font-size:14px;color:rgba(255,255,255,.6);letter-spacing:.05em;text-transform:uppercase}
+.header-date{display:inline-block;margin-top:.75rem;background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);padding:4px 14px;border-radius:99px;font-size:12px}
 
-        .stat-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+/* STATS BAR */
+.stats{display:flex;justify-content:center;gap:0;background:var(--green2)}
+.stat{flex:1;max-width:200px;text-align:center;padding:.875rem 1rem;border-right:0.5px solid rgba(255,255,255,.15)}
+.stat:last-child{border-right:none}
+.stat-val{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:#fff}
+.stat-lbl{font-size:11px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
 
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-        }
+/* MAIN */
+.main{max-width:1100px;margin:0 auto;padding:2rem 1rem}
+.filials{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
 
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-    </style>
+/* FILIAL CARD */
+.filial{background:var(--white);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.filial-header{background:var(--green2);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
+.filial-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:#fff}
+.filial-count{background:rgba(255,255,255,.2);color:#fff;font-size:12px;font-weight:500;padding:3px 12px;border-radius:99px}
+
+/* TABLE HEADER */
+.tbl-head{display:grid;grid-template-columns:70px 1fr 60px;gap:8px;padding:8px 12px;background:var(--light);border-bottom:1px solid var(--border)}
+.tbl-head span{font-size:11px;font-weight:500;color:var(--green);text-transform:uppercase;letter-spacing:.05em}
+.tbl-head .th-center{text-align:center}
+
+/* ITEM ROW */
+.item{display:grid;grid-template-columns:70px 1fr 60px;gap:8px;align-items:center;padding:8px 12px;border-bottom:.5px solid var(--border);transition:background .15s}
+.item:last-child{border-bottom:none}
+.item:hover{background:var(--light)}
+.item-img{width:60px;height:60px;border-radius:8px;object-fit:cover;background:#f0f0f0;display:block}
+.item-img-placeholder{width:60px;height:60px;border-radius:8px;background:var(--light);display:flex;align-items:center;justify-content:center;font-size:22px}
+.item-name{font-size:13px;color:var(--text);font-weight:500;line-height:1.4}
+.item-qty{text-align:center;font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--green2)}
+
+/* FILIAL FOOTER */
+.filial-footer{background:var(--green);padding:.875rem 1.25rem;display:flex;justify-content:space-between;align-items:center}
+.filial-footer-lbl{font-size:13px;color:rgba(255,255,255,.7)}
+.filial-footer-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff}
+
+/* GRAND TOTAL */
+.grand{background:var(--gold);border-radius:12px;padding:1.25rem 2rem;text-align:center;margin-top:1.5rem}
+.grand-lbl{font-size:13px;color:rgba(0,0,0,.6);margin-bottom:4px}
+.grand-val{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:#fff;letter-spacing:-1px}
+.grand-sub{font-size:12px;color:rgba(255,255,255,.8);margin-top:4px}
+
+/* FOOTER */
+footer{text-align:center;padding:2rem;font-size:12px;color:#aaa}
+footer strong{color:var(--green)}
+
+/* UPLOAD SECTION */
+.upload-section{background:var(--white);border:2px dashed var(--border);border-radius:12px;padding:2rem;text-align:center;margin-bottom:1.5rem;cursor:pointer;transition:border-color .2s}
+.upload-section:hover{border-color:var(--green3)}
+.upload-section p{color:var(--text2);font-size:14px}
+.upload-section strong{color:var(--green2)}
+#fileInput{display:none}
+
+@media(max-width:700px){
+  .filials{grid-template-columns:1fr}
+  .stats{flex-wrap:wrap}
+}
+</style>
 </head>
-<body class="text-slate-900">
+<body>
 
-    <!-- 
-      PALETTE CHOICE: "Vibrant Forest & Sunshine" 
-      Primary: #059669 (Emerald), Secondary: #D97706 (Amber), Accent: #0F172A (Deep Slate)
-      
-      PLAN:
-      1. Executive Summary: High-level KPI cards for total stock and branch leadership.
-      2. Comparative Landscape: Bar charts showing porcelain vs cutlery counts.
-      3. Inventory Density: Donut charts for category distribution.
-      4. Granular Inventory: Searchable table with conditional styling.
-      5. Conclusion: Strategic takeaways.
-      
-      CONFIRMATION: NO SVG used. NO Mermaid JS used.
-    -->
+<div class="header">
+  <div class="header-logo">Ottimo <span>Inventar</span></div>
+  <div class="header-sub">Filiallar bo'yicha jihoz hisoboti</div>
+  <div class="header-date" id="dateLabel"></div>
+</div>
 
-    <header class="bg-[#0F172A] text-white py-10 px-6 sticky top-0 z-50 border-b border-white/10">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <div>
-                <h1 class="text-3xl font-bold tracking-tight">OTTIMO <span class="text-[#059669]">ANALYTICS</span></h1>
-                <p class="text-slate-400 text-sm mt-1 uppercase tracking-widest">Inventar Strategik Boshqaruvi</p>
-            </div>
-            <nav class="flex gap-6 text-sm font-medium">
-                <a href="#summary" class="hover:text-[#059669] transition-colors">Xulosa</a>
-                <a href="#charts" class="hover:text-[#059669] transition-colors">Grafiklar</a>
-                <a href="#data" class="hover:text-[#059669] transition-colors">Ma'lumotlar</a>
-            </nav>
-        </div>
-    </header>
+<div class="stats">
+  <div class="stat"><div class="stat-val">2</div><div class="stat-lbl">Filial</div></div>
+  <div class="stat"><div class="stat-val" id="statNukus">141</div><div class="stat-lbl">Nukus jami</div></div>
+  <div class="stat"><div class="stat-val" id="statParus">120</div><div class="stat-lbl">Parus jami</div></div>
+  <div class="stat"><div class="stat-val" id="statTotal">261</div><div class="stat-lbl">Umumiy jami</div></div>
+</div>
 
-    <main class="max-w-7xl mx-auto px-6 py-12">
-        
-        <section id="summary" class="mb-16">
-            <div class="mb-8">
-                <h2 class="text-2xl font-bold text-slate-800">Filiallar Holati</h2>
-                <p class="text-slate-500 mt-2">Parus va Nukus filiallarining jami moddiy boyliklari ko'rsatkichi.</p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div class="stat-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Jami Buyumlar</p>
-                    <div class="flex items-end gap-2 mt-2">
-                        <span class="text-4xl font-extrabold text-slate-900" id="stat-total">0</span>
-                        <span class="text-emerald-600 text-sm font-bold mb-1">↑ 100%</span>
-                    </div>
-                </div>
+<div class="main">
 
-                <div class="stat-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-[#059669]">
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Parus Filiali</p>
-                    <div class="flex items-end gap-2 mt-2">
-                        <span class="text-4xl font-extrabold text-slate-900" id="stat-parus">0</span>
-                        <span class="text-slate-400 text-xs mb-1">birlik</span>
-                    </div>
-                </div>
+  <!-- Rasm yuklash -->
+  <div class="upload-section" onclick="document.getElementById('fileInput').click()">
+    <p>📷 <strong>Rasmlarni yuklash uchun bosing</strong></p>
+    <p style="margin-top:4px;font-size:12px">Har bir buyum uchun rasm yuklang — buyum nomi bo'yicha avtomatik joylashadi</p>
+    <input type="file" id="fileInput" multiple accept="image/*" onchange="handleImages(event)">
+  </div>
 
-                <div class="stat-card bg-white p-6 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-[#D97706]">
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Nukus Filiali</p>
-                    <div class="flex items-end gap-2 mt-2">
-                        <span class="text-4xl font-extrabold text-slate-900" id="stat-nukus">0</span>
-                        <span class="text-slate-400 text-xs mb-1">birlik</span>
-                    </div>
-                </div>
+  <div class="filials">
+    <!-- NUKUS -->
+    <div class="filial">
+      <div class="filial-header">
+        <div class="filial-name">🏪 Nukus filiali</div>
+        <div class="filial-count" id="nukusCount">15 ta buyum</div>
+      </div>
+      <div class="tbl-head">
+        <span>Rasm</span><span>Buyum nomi</span><span class="th-center">Soni</span>
+      </div>
+      <div id="nukusList"></div>
+      <div class="filial-footer">
+        <div class="filial-footer-lbl">Jami jihoz</div>
+        <div class="filial-footer-val" id="nukusTotal">141 ta</div>
+      </div>
+    </div>
 
-                <div class="stat-card bg-[#059669] p-6 rounded-2xl shadow-lg text-white">
-                    <p class="text-white/70 text-xs font-bold uppercase tracking-wider">Asosiy Tavsiya</p>
-                    <p class="mt-2 text-sm font-medium leading-relaxed">
-                        Nukusda pichoq-vilkalar ko'proq, Parusda esa tarelka va chashkalar zaxirasi yuqori. Balansni saqlash tavsiya etiladi.
-                    </p>
-                </div>
-            </div>
-        </section>
+    <!-- PARUS -->
+    <div class="filial">
+      <div class="filial-header">
+        <div class="filial-name">🏪 Parus filiali</div>
+        <div class="filial-count" id="parusCount">20 ta buyum</div>
+      </div>
+      <div class="tbl-head">
+        <span>Rasm</span><span>Buyum nomi</span><span class="th-center">Soni</span>
+      </div>
+      <div id="parusList"></div>
+      <div class="filial-footer">
+        <div class="filial-footer-lbl">Jami jihoz</div>
+        <div class="filial-footer-val" id="parusTotal">120 ta</div>
+      </div>
+    </div>
+  </div>
 
-        <section id="charts" class="mb-16 scroll-mt-24">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
-                    <h3 class="text-lg font-bold mb-2">Kategoriyalar Bo'yicha Solishtiruv</h3>
-                    <p class="text-slate-500 text-sm mb-8">Pichoq-vilkalar va chashkalar filiallar kesimida.</p>
-                    <div class="chart-container">
-                        <canvas id="mainComparisonChart"></canvas>
-                    </div>
-                    <div class="mt-6 p-4 bg-slate-50 rounded-xl text-xs text-slate-600 italic leading-relaxed">
-                        Ushbu grafik Nukus filiali oshxona asboblari (cutlery) bo'yicha sezilarli ustunlikka ega ekanligini, Parus esa chashka va stakanlar bo'yicha yetakchiligini ko'rsatmoqda.
-                    </div>
-                </div>
+  <div class="grand">
+    <div class="grand-lbl">Ikkala filial umumiy jami</div>
+    <div class="grand-val" id="grandTotal">261 ta jihoz</div>
+    <div class="grand-sub">Nukus: 141 ta · Parus: 120 ta</div>
+  </div>
 
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
-                    <h3 class="text-lg font-bold mb-2">Inventar Tarkibi (Nukus)</h3>
-                    <p class="text-slate-500 text-sm mb-8">Nukus filialidagi umumiy inventar ulushi.</p>
-                    <div class="chart-container">
-                        <canvas id="nukusDonutChart"></canvas>
-                    </div>
-                    <div class="mt-6 p-4 bg-slate-50 rounded-xl text-xs text-slate-600 italic leading-relaxed">
-                        Nukusda porselein (chashka va tarelka) jami inventarning qariyb 60% qismini tashkil etadi. Bu filial katta hajmdagi tadbirlarga tayyor ekanidan dalolat beradi.
-                    </div>
-                </div>
+</div>
 
-            </div>
-        </section>
+<footer>© 2026 <strong>Ottimo</strong> · AI UP tomonidan tayyorlandi</footer>
 
-        <section id="data" class="scroll-mt-24">
-            <div class="flex flex-col md:flex-row justify-between items-end gap-6 mb-8">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-800">Batafsil Reestr</h2>
-                    <p class="text-slate-500 mt-2">Barcha buyumlarning filiallararo taqsimoti va aniq soni.</p>
-                </div>
-                <div class="w-full md:w-96">
-                    <input type="text" id="searchTable" placeholder="Buyumni qidirish..." class="w-full px-5 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#059669] focus:outline-none transition-all">
-                </div>
-            </div>
+<script>
+// Sana
+var d = new Date();
+document.getElementById('dateLabel').textContent =
+  d.getDate()+'.'+(d.getMonth()+1)+'.'+d.getFullYear();
 
-            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-left" id="dataTable">
-                        <thead>
-                            <tr class="bg-slate-50 border-b border-slate-100">
-                                <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Buyum nomi</th>
-                                <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Parus</th>
-                                <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Nukus</th>
-                                <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Farq</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableContent" class="divide-y divide-slate-50">
-                            <!-- Populated via JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
+// Buyumlar va emoji ikonlari (rasm yuklanmasa emoji ko'rinadi)
+var nukus = [
+  {name:'Medium cup',      qty:11, emoji:'☕'},
+  {name:'Large cup',       qty:13, emoji:'☕'},
+  {name:'Small cup',       qty:10, emoji:'🍵'},
+  {name:'Espresso cup',    qty:4,  emoji:'☕'},
+  {name:'Sauce cup',       qty:1,  emoji:'🥣'},
+  {name:'Espresso tarelka',qty:9,  emoji:'🍽'},
+  {name:'Large cup tarelka',qty:18,emoji:'🍽'},
+  {name:'Large new tarelka',qty:6, emoji:'🍽'},
+  {name:'Old small tarelka',qty:9, emoji:'🍽'},
+  {name:'Medium tarelka',  qty:12, emoji:'🍽'},
+  {name:'Flat white cup',  qty:1,  emoji:'☕'},
+  {name:'Kichik vilka',    qty:1,  emoji:'🍴'},
+  {name:'Pichoq',          qty:18, emoji:'🔪'},
+  {name:'Katta vilka',     qty:20, emoji:'🍴'},
+  {name:'Kichik qoshiq',   qty:8,  emoji:'🥄'},
+];
 
-    </main>
+var parus = [
+  {name:'Bar qoshiq',              qty:2,  emoji:'🥄'},
+  {name:'Americano kichik chashka',qty:6,  emoji:'☕'},
+  {name:'Vafli pichoq',            qty:10, emoji:'🔪'},
+  {name:'Vilka (3 tishli)',         qty:3,  emoji:'🍴'},
+  {name:'Vilka (4 tishli)',         qty:15, emoji:'🍴'},
+  {name:'Ahmat qoshiq',            qty:4,  emoji:'🥄'},
+  {name:'Qoshiq',                  qty:6,  emoji:'🥄'},
+  {name:'Vafli tarelka',           qty:13, emoji:'🍽'},
+  {name:'Roks stakan',             qty:2,  emoji:'🥃'},
+  {name:'Kichik roks stakan',      qty:1,  emoji:'🥃'},
+  {name:'Latte stakan',            qty:5,  emoji:'🥛'},
+  {name:'Pitcher 1L',              qty:1,  emoji:'🫖'},
+  {name:'Pitcher 0.5L',            qty:1,  emoji:'🫖'},
+  {name:'Pitcher kichik',          qty:2,  emoji:'🫖'},
+  {name:'Americano chashka',       qty:9,  emoji:'☕'},
+  {name:"Cappuccino kichik",       qty:3,  emoji:'☕'},
+  {name:'Cappuccino katta',        qty:10, emoji:'☕'},
+  {name:"Cappuccino o'rta",        qty:3,  emoji:'☕'},
+  {name:'Kichik tarelka',          qty:12, emoji:'🍽'},
+  {name:'Cappuccino katta tarelka',qty:9,  emoji:'🍽'},
+];
 
-    <footer class="bg-slate-900 text-white py-16 px-6 mt-20">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div>
-                <h3 class="text-xl font-bold mb-4 text-[#059669]">OTTIMO CATERING</h3>
-                <p class="text-slate-400 text-sm leading-relaxed max-w-sm">
-                    Ushbu tahliliy tizim inventarizatsiya jarayonini avtomatlashtirish va zaxiralarni samarali boshqarish maqsadida yaratilgan.
-                </p>
-            </div>
-            <div class="text-right">
-                <p class="text-slate-500 text-xs uppercase tracking-widest mb-2">Hisobot sanasi</p>
-                <p class="text-xl font-bold">12 Iyun, 2026</p>
-            </div>
-        </div>
-    </footer>
+// Rasmlar storage
+var images = JSON.parse(localStorage.getItem('ottimo_imgs') || '{}');
 
-    <script>
-        const inventory = [
-            { name: "Ahmat qoshiq", parus: 4, nukus: 0 },
-            { name: "Americano chashka", parus: 6, nukus: 0 },
-            { name: "Bar qoshiq", parus: 2, nukus: 0 },
-            { name: "Cappuccino katta", parus: 10, nukus: 0 },
-            { name: "Cappuccino tarelka", parus: 9, nukus: 0 },
-            { name: "Cappuccino kichik", parus: 3, nukus: 10 },
-            { name: "Espresso cup", parus: 0, nukus: 4 },
-            { name: "Espresso tarelka", parus: 0, nukus: 9 },
-            { name: "Katta vilka", parus: 15, nukus: 20 },
-            { name: "Kichik qoshiq", parus: 6, nukus: 8 },
-            { name: "Kichik tarelka", parus: 12, nukus: 0 },
-            { name: "Kichik vilka", parus: 3, nukus: 1 },
-            { name: "Large cup", parus: 0, nukus: 13 },
-            { name: "Large tarelka", parus: 0, nukus: 18 },
-            { name: "Latte stakan", parus: 5, nukus: 0 },
-            { name: "Medium cup", parus: 0, nukus: 11 },
-            { name: "Pichoq", parus: 10, nukus: 18 },
-            { name: "Vaflili tarelka", parus: 13, nukus: 0 },
-            { name: "Flat white cup", parus: 0, nukus: 1 }
-        ];
+function renderList(data, containerId) {
+  var html = '';
+  data.forEach(function(item) {
+    var key = item.name.toLowerCase().replace(/\s+/g,'-');
+    var imgHtml = images[key]
+      ? '<img class="item-img" src="'+images[key]+'" alt="'+item.name+'">'
+      : '<div class="item-img-placeholder">'+item.emoji+'</div>';
+    html += '<div class="item">'+imgHtml
+      +'<div class="item-name">'+item.name+'</div>'
+      +'<div class="item-qty">'+item.qty+'</div>'
+      +'</div>';
+  });
+  document.getElementById(containerId).innerHTML = html;
+}
 
-        // Label wrapping helper (16 char logic)
-        function wrapLabel(label) {
-            if (label.length <= 16) return label;
-            const words = label.split(' ');
-            let lines = [];
-            let currentLine = "";
-            words.forEach(word => {
-                if ((currentLine + word).length > 16) {
-                    lines.push(currentLine.trim());
-                    currentLine = word + " ";
-                } else {
-                    currentLine += word + " ";
-                }
-            });
-            lines.push(currentLine.trim());
-            return lines;
+function render() {
+  renderList(nukus, 'nukusList');
+  renderList(parus, 'parusList');
+}
+
+// Rasm yuklash
+function handleImages(e) {
+  var files = Array.from(e.target.files);
+  var loaded = 0;
+  files.forEach(function(file) {
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      // Fayl nomidan buyum nomini topish
+      var fname = file.name.toLowerCase().replace(/\.[^.]+$/, '').replace(/[\s_]+/g, '-');
+      images[fname] = ev.target.result;
+
+      // Eng yaqin buyum nomini qidirish
+      var allItems = nukus.concat(parus);
+      allItems.forEach(function(item) {
+        var key = item.name.toLowerCase().replace(/\s+/g,'-');
+        if(fname.includes(key.substring(0,5)) || key.includes(fname.substring(0,5))) {
+          images[key] = ev.target.result;
         }
+      });
 
-        const sharedTooltipOptions = {
-            callbacks: {
-                title: function(tooltipItems) {
-                    const item = tooltipItems[0];
-                    let label = item.chart.data.labels[item.dataIndex];
-                    return Array.isArray(label) ? label.join(' ') : label;
-                }
-            }
-        };
+      loaded++;
+      if(loaded === files.length) {
+        localStorage.setItem('ottimo_imgs', JSON.stringify(images));
+        render();
+        alert(loaded + ' ta rasm yuklandi! ✅');
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
-        function init() {
-            const parusTotal = inventory.reduce((a, b) => a + b.parus, 0);
-            const nukusTotal = inventory.reduce((a, b) => a + b.nukus, 0);
-            
-            document.getElementById('stat-total').innerText = parusTotal + nukusTotal;
-            document.getElementById('stat-parus').innerText = parusTotal;
-            document.getElementById('stat-nukus').innerText = nukusTotal;
-
-            renderTable(inventory);
-            renderCharts();
-        }
-
-        function renderTable(data) {
-            const container = document.getElementById('tableContent');
-            container.innerHTML = data.map(item => {
-                const diff = Math.abs(item.parus - item.nukus);
-                const colorClass = item.parus > item.nukus ? 'text-emerald-600' : (item.nukus > item.parus ? 'text-amber-600' : 'text-slate-400');
-                return `
-                    <tr class="hover:bg-slate-50/80 transition-colors">
-                        <td class="px-8 py-4 font-semibold text-slate-700">${item.name}</td>
-                        <td class="px-8 py-4 text-center text-slate-600 font-medium">${item.parus}</td>
-                        <td class="px-8 py-4 text-center text-slate-600 font-medium">${item.nukus}</td>
-                        <td class="px-8 py-4 text-center ${colorClass} font-bold text-xs">
-                            ${item.parus === item.nukus ? 'Teng' : diff + (item.parus > item.nukus ? ' (P)' : ' (N)')}
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function renderCharts() {
-            // Main Comparison (Bar Chart)
-            new Chart(document.getElementById('mainComparisonChart'), {
-                type: 'bar',
-                data: {
-                    labels: [wrapLabel('Pichoqlar'), wrapLabel('Vilkalar'), wrapLabel('Chashkalar'), wrapLabel('Tarelkalar'), wrapLabel('Qoshiqlar')],
-                    datasets: [
-                        {
-                            label: 'Parus',
-                            data: [10, 18, 24, 34, 12],
-                            backgroundColor: '#059669',
-                            borderRadius: 6
-                        },
-                        {
-                            label: 'Nukus',
-                            data: [18, 21, 39, 45, 8],
-                            backgroundColor: '#D97706',
-                            borderRadius: 6
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 6 } },
-                        tooltip: sharedTooltipOptions
-                    },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
-                        x: { grid: { display: false } }
-                    }
-                }
-            });
-
-            // Nukus Structure (Donut Chart)
-            new Chart(document.getElementById('nukusDonutChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: [wrapLabel('Asosiy Idishlar'), wrapLabel('Pichoq-Vilka'), wrapLabel('Stakanlar'), wrapLabel('Boshqa')],
-                    datasets: [{
-                        data: [45, 38, 15, 12],
-                        backgroundColor: ['#059669', '#D97706', '#0F172A', '#E2E8F0'],
-                        borderWidth: 0,
-                        hoverOffset: 20
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '75%',
-                    plugins: {
-                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } },
-                        tooltip: sharedTooltipOptions
-                    }
-                }
-            });
-        }
-
-        document.getElementById('searchTable').addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            const filtered = inventory.filter(i => i.name.toLowerCase().includes(term));
-            renderTable(filtered);
-        });
-
-        window.onload = init;
-    </script>
+render();
+</script>
 </body>
 </html>
